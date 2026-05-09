@@ -15,7 +15,7 @@ const SIZE_TO_HEIGHT: Record<NonNullable<LogoProps["size"]>, number> = {
   xl: 96,
 };
 
-const ASPECT = 1340 / 287;
+const ASPECT = 1340 / 193;
 
 export function Logo({
   className,
