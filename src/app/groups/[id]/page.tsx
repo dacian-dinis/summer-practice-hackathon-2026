@@ -1,9 +1,11 @@
 import { CheckCircle2 } from "lucide-react";
 import { notFound } from "next/navigation";
 
+import { CaptainCopilot } from "@/components/captain-copilot";
 import { ConfirmGroupButton } from "@/components/confirm-group-button";
 import { EventCard } from "@/components/event-card";
 import { GroupChat } from "@/components/group-chat";
+import { PollVote } from "@/components/poll-vote";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -14,6 +16,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { getCurrentUser } from "@/lib/auth";
+import { parsePendingPoll } from "@/lib/event-poll";
 import { prisma } from "@/lib/prisma";
 
 const SPORT_EMOJI: Record<string, string> = {
@@ -131,6 +134,38 @@ export default async function GroupDetailPage({
     text: message.text,
     createdAt: message.createdAt.toISOString(),
   }));
+  const isCaptain = currentUser.id === group.captainId;
+  const pendingPoll = group.event ? parsePendingPoll(group.event.weatherSummary) : null;
+  const pollVenues = pendingPoll
+    ? await prisma.venue.findMany({
+        where: {
+          id: {
+            in: pendingPoll.candidateVenueIds,
+          },
+        },
+        select: {
+          id: true,
+          name: true,
+        },
+      })
+    : [];
+  const pollVenueById = new Map(pollVenues.map((venue) => [venue.id, venue]));
+  const pollCandidates = pendingPoll
+    ? pendingPoll.candidateVenueIds
+        .map((venueId) => {
+          const venue = pollVenueById.get(venueId);
+
+          if (!venue) {
+            return null;
+          }
+
+          return {
+            venueId: venue.id,
+            name: venue.name,
+          };
+        })
+        .filter((candidate): candidate is { venueId: string; name: string } => candidate !== null)
+    : [];
 
   return (
     <div className="space-y-6">
@@ -162,7 +197,19 @@ export default async function GroupDetailPage({
         </div>
       </Card>
 
-      {group.event ? <EventCard event={group.event} venue={group.event.venue} /> : null}
+      {!group.event ? <CaptainCopilot groupId={group.id} isCaptain={isCaptain} /> : null}
+
+      {group.event && pendingPoll && pollCandidates.length === 3 ? (
+        <PollVote
+          candidates={pollCandidates}
+          eventId={group.event.id}
+          totalMembers={group.members.length}
+        />
+      ) : null}
+
+      {group.event && (!pendingPoll || pollCandidates.length !== 3) ? (
+        <EventCard event={group.event} venue={group.event.venue} />
+      ) : null}
 
       <Card className="border-neutral-200 bg-white">
         <CardHeader>
