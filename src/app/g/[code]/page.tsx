@@ -7,6 +7,7 @@ import { Logo } from "@/components/logo";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { getCurrentUser } from "@/lib/auth";
+import { getDict } from "@/lib/i18n";
 import { prisma } from "@/lib/prisma";
 
 const SPORT_EMOJI: Record<string, string> = {
@@ -28,6 +29,7 @@ type SharePageProps = {
 };
 
 export default async function SharePage({ params }: SharePageProps): Promise<JSX.Element> {
+  const t = getDict();
   const group = await prisma.group.findUnique({
     where: { shareCode: params.code },
     include: {
@@ -61,9 +63,9 @@ export default async function SharePage({ params }: SharePageProps): Promise<JSX
 
         <div className="rounded-md border-2 border-brand-ink bg-white p-8 shadow-none dark:border-neutral-50 dark:bg-neutral-950">
           <div className="space-y-4">
-            <div className="font-mono-label text-brand-ink/60 dark:text-neutral-400">SHARED INVITE</div>
+            <div className="font-mono-label text-brand-ink/60 dark:text-neutral-400">{t["share.eyebrow"]}</div>
             <h1 className="font-display text-4xl leading-tight text-brand-ink dark:text-neutral-50 sm:text-5xl">
-              You&apos;re invited to play <span className="text-brand">{group.sport.name}</span>
+              {t["share.invitedToPlay"]} <span className="text-brand">{group.sport.name}</span>
             </h1>
             <div className="flex flex-wrap items-center gap-3 text-sm text-neutral-600 dark:text-neutral-400">
               <Badge className="bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-300" variant="secondary">
@@ -78,7 +80,7 @@ export default async function SharePage({ params }: SharePageProps): Promise<JSX
 
           {group.event && group.event.venue ? (
             <div className="mt-6 rounded-md border border-neutral-200 bg-neutral-50 p-4 dark:border-neutral-800 dark:bg-neutral-900">
-              <div className="font-mono-label mb-1 text-brand-ink/60 dark:text-neutral-400">VENUE</div>
+              <div className="font-mono-label mb-1 text-brand-ink/60 dark:text-neutral-400">{t["share.venue"]}</div>
               <div className="font-semibold text-neutral-950 dark:text-neutral-50">{group.event.venue.name}</div>
               <div className="text-sm text-neutral-600 dark:text-neutral-400">{group.event.venue.address}</div>
             </div>
@@ -86,7 +88,7 @@ export default async function SharePage({ params }: SharePageProps): Promise<JSX
 
           <div className="mt-6">
             <div className="font-mono-label mb-3 text-brand-ink/60 dark:text-neutral-400">
-              MEMBERS · {group.members.length}/{group.sport.maxGroup}
+              {t["share.members"]} · {group.members.length}/{group.sport.maxGroup}
             </div>
             <div className="flex flex-wrap gap-2">
               {group.members.map((member) => (
@@ -117,11 +119,11 @@ export default async function SharePage({ params }: SharePageProps): Promise<JSX
                     className="min-h-11 w-full rounded-md bg-brand text-white hover:bg-brand-deep font-bold uppercase tracking-wider"
                     type="button"
                   >
-                    Sign up to join
+                    {t["share.signupToJoin"]}
                   </Button>
                 </Link>
                 <Link className="block text-center text-sm text-neutral-600 hover:text-brand dark:text-neutral-400" href={`/login?next=/g/${params.code}`}>
-                  Already have an account? Log in
+                  {t["share.alreadyHaveAccount"]}
                 </Link>
               </div>
             ) : isMember ? (
@@ -130,19 +132,19 @@ export default async function SharePage({ params }: SharePageProps): Promise<JSX
                   className="min-h-11 w-full rounded-md bg-brand text-white hover:bg-brand-deep font-bold uppercase tracking-wider"
                   type="button"
                 >
-                  Open group
+                  {t["share.openGroup"]}
                 </Button>
               </Link>
             ) : isFinished ? (
               <Button className="min-h-11 w-full rounded-md" disabled type="button" variant="outline">
-                This group is finished
+                {t["share.finished"]}
               </Button>
             ) : isFull ? (
               <Button className="min-h-11 w-full rounded-md" disabled type="button" variant="outline">
-                Group is full
+                {t["share.full"]}
               </Button>
             ) : (
-              <JoinGroupButton groupId={group.id} />
+              <JoinGroupButton groupId={group.id} label={t["share.joinGroup"]} />
             )}
           </div>
         </div>

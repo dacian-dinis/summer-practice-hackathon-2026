@@ -13,6 +13,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { resolveCity } from "@/lib/geo";
+import { getDict } from "@/lib/i18n";
 import { prisma } from "@/lib/prisma";
 import { todayDate } from "@/lib/today";
 
@@ -41,6 +42,7 @@ type DashboardHomeProps = {
 };
 
 export async function DashboardHome({ currentUser }: DashboardHomeProps): Promise<JSX.Element> {
+  const t = getDict();
   const city = await resolveCity();
   const today = todayDate();
   const user = await prisma.user.findUnique({
@@ -118,14 +120,16 @@ export async function DashboardHome({ currentUser }: DashboardHomeProps): Promis
           <div className="space-y-4">
             <div className="font-mono-label text-brand-ink/60 dark:text-neutral-400">
               <CalendarDays className="mr-2 inline h-3.5 w-3.5" />
-              SHOWUPTODAY · {city.name.toUpperCase()}
+              {t["dash.eyebrow"]} · {city.name.toUpperCase()}
             </div>
             <div className="space-y-3">
               <h1 className="font-display text-4xl leading-[0.95] text-brand-ink dark:text-neutral-50 sm:text-5xl lg:text-6xl">
-                What are you up for today, <span className="text-brand">{user.name}</span>?
+                {t["dash.heading.before"]}
+                <span className="text-brand">{user.name}</span>
+                {t["dash.heading.q"]}
               </h1>
               <p className="max-w-2xl text-sm leading-6 text-brand-ink/70 dark:text-neutral-400">
-                Mark each sport once and matching uses your real availability instead of guessing.
+                {t["dash.subhead"]}
               </p>
               <Link href="/events/new">
                 <Button
@@ -134,7 +138,7 @@ export async function DashboardHome({ currentUser }: DashboardHomeProps): Promis
                   type="button"
                   variant="outline"
                 >
-                  + Create event
+                  {t["dash.create"]}
                 </Button>
               </Link>
             </div>
@@ -142,14 +146,14 @@ export async function DashboardHome({ currentUser }: DashboardHomeProps): Promis
           <div className="min-w-[280px] rounded-md border-2 border-brand-ink bg-white p-5 dark:border-neutral-50 dark:bg-neutral-950">
             <div className="font-mono-label mb-2 flex items-center gap-2 text-brand-ink/60 dark:text-neutral-400">
               <Users className="h-3.5 w-3.5" />
-              YOU&apos;RE IN FOR TODAY
+              {t["dash.youAreIn"]}
             </div>
             <div className="font-display text-lg leading-snug text-brand-ink dark:text-neutral-50">
               {yesSports.length > 0
                 ? yesSports
                     .map((item) => `${SPORT_EMOJI[item.sport.name] ?? "\u{1F3C5}"} ${item.sport.name}`)
                     .join(" · ")
-                : "Nothing locked yet."}
+                : t["dash.nothing"]}
             </div>
           </div>
         </div>
@@ -159,9 +163,9 @@ export async function DashboardHome({ currentUser }: DashboardHomeProps): Promis
         <Card className="border-dashed border-neutral-300 bg-white dark:border-neutral-700 dark:bg-neutral-900">
           <CardContent className="flex flex-col gap-3 p-5 sm:flex-row sm:items-center sm:justify-between">
             <div className="space-y-1">
-              <div className="font-medium text-neutral-950 dark:text-neutral-50">Mark Yes for any sport to find a group</div>
+              <div className="font-medium text-neutral-950 dark:text-neutral-50">{t["dash.markYesTitle"]}</div>
               <div className="text-sm text-neutral-600 dark:text-neutral-400">
-                Your sports are set. Add today&apos;s availability so matching has something to work with.
+                {t["dash.markYesBody"]}
               </div>
             </div>
             <Users className="h-5 w-5 text-neutral-400 dark:text-neutral-500" />

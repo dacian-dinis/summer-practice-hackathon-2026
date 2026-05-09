@@ -2,7 +2,7 @@
 
 import { Loader2, MapPin, Sparkles } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { z } from "zod";
 
 import { Badge } from "@/components/ui/badge";
@@ -15,6 +15,57 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
+import { formatKm, haversineKm } from "@/lib/distance";
+
+type UserLocation = {
+  lat: number;
+  lng: number;
+  city: string;
+};
+
+let cachedUserLocation: UserLocation | null = null;
+let userLocationPromise: Promise<UserLocation | null> | null = null;
+
+async function getUserLocation(): Promise<UserLocation | null> {
+  if (cachedUserLocation) {
+    return cachedUserLocation;
+  }
+
+  if (!userLocationPromise) {
+    userLocationPromise = fetch("/api/me/location", {
+      credentials: "same-origin",
+    })
+      .then(async (response) => {
+        if (!response.ok) {
+          return null;
+        }
+
+        const json: unknown = await response.json();
+        const payload = json as Record<string, unknown>;
+
+        if (
+          !json ||
+          typeof json !== "object" ||
+          typeof payload.lat !== "number" ||
+          typeof payload.lng !== "number" ||
+          typeof payload.city !== "string"
+        ) {
+          return null;
+        }
+
+        const location = json as UserLocation;
+        cachedUserLocation = location;
+
+        return location;
+      })
+      .catch(() => null)
+      .finally(() => {
+        userLocationPromise = null;
+      });
+  }
+
+  return userLocationPromise;
+}
 
 const copilotVenueSchema = z
   .object({
@@ -70,6 +121,21 @@ export function CaptainCopilot({
   const [isLoading, setIsLoading] = useState(false);
   const [isPostingPoll, setIsPostingPoll] = useState(false);
   const [isRefreshing, startTransition] = useTransition();
+  const [userLocation, setUserLocation] = useState<UserLocation | null>(cachedUserLocation);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    void getUserLocation().then((location) => {
+      if (isMounted && location) {
+        setUserLocation(location);
+      }
+    });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   if (!isCaptain) {
     return null;
@@ -211,6 +277,20 @@ export function CaptainCopilot({
                     <MapPin className="mt-0.5 h-4 w-4 shrink-0" />
                     <span>{venue.address}</span>
                   </div>
+                  {userLocation ? (
+                    <div className="mb-3 flex items-start gap-2 text-sm text-sky-700 dark:text-sky-300">
+                      <MapPin className="mt-0.5 h-4 w-4 shrink-0" />
+                      <span>
+                        {formatKm(
+                          haversineKm(userLocation, {
+                            lat: venue.lat,
+                            lng: venue.lng,
+                          }),
+                        )}{" "}
+                        away
+                      </span>
+                    </div>
+                  ) : null}
                   <p className="text-sm leading-6 text-neutral-700 dark:text-neutral-300">{venue.reasoning}</p>
                 </div>
               ))}

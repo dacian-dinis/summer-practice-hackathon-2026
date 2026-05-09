@@ -19,7 +19,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { getCurrentUser } from "@/lib/auth";
+import { haversineKm } from "@/lib/distance";
 import { parsePendingPoll } from "@/lib/event-poll";
+import { resolveCity } from "@/lib/geo";
 import { prisma } from "@/lib/prisma";
 
 const SPORT_EMOJI: Record<string, string> = {
@@ -223,6 +225,14 @@ export default async function GroupDetailPage({
         })
         .filter((candidate): candidate is { venueId: string; name: string } => candidate !== null)
     : [];
+  const userCity = group.event ? await resolveCity() : null;
+  const distanceFromUserKm =
+    group.event && userCity
+      ? haversineKm(userCity, {
+          lat: group.event.venue.lat,
+          lng: group.event.venue.lng,
+        })
+      : null;
 
   return (
     <div className="space-y-6">
@@ -274,7 +284,7 @@ export default async function GroupDetailPage({
       ) : null}
 
       {group.event && (!pendingPoll || pollCandidates.length !== 3) ? (
-        <EventCard event={group.event} venue={group.event.venue} />
+        <EventCard distanceFromUserKm={distanceFromUserKm} event={group.event} venue={group.event.venue} />
       ) : null}
 
       {group.event && (!pendingPoll || pollCandidates.length !== 3) ? (

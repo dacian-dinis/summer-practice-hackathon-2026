@@ -7,9 +7,10 @@ import { Button } from "@/components/ui/button";
 
 type JoinGroupButtonProps = {
   groupId: string;
+  label: string;
 };
 
-export function JoinGroupButton({ groupId }: JoinGroupButtonProps): JSX.Element {
+export function JoinGroupButton({ groupId, label }: JoinGroupButtonProps): JSX.Element {
   const [isJoining, setIsJoining] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -46,7 +47,7 @@ export function JoinGroupButton({ groupId }: JoinGroupButtonProps): JSX.Element 
         type="button"
       >
         {isJoining ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-        Join the group
+        {label}
       </Button>
       {error ? (
         <div className="rounded-md border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700 dark:border-rose-900 dark:bg-rose-950/60 dark:text-rose-200">

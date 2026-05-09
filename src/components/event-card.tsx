@@ -8,6 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { formatKm } from "@/lib/distance";
 
 type EventCardProps = {
   event: {
@@ -21,6 +22,7 @@ type EventCardProps = {
     lat: number;
     lng: number;
   };
+  distanceFromUserKm?: number | null;
 };
 
 function formatTime(startsAt: Date): string {
@@ -31,7 +33,7 @@ function formatTime(startsAt: Date): string {
   }).format(startsAt);
 }
 
-export function EventCard({ event, venue }: EventCardProps): JSX.Element {
+export function EventCard({ event, venue, distanceFromUserKm = null }: EventCardProps): JSX.Element {
   const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${venue.lat},${venue.lng}`;
   const calendarUrl = `/api/events/${event.id}/ics`;
 
@@ -44,12 +46,20 @@ export function EventCard({ event, venue }: EventCardProps): JSX.Element {
               <CardTitle className="text-xl text-neutral-950 dark:text-neutral-50">{venue.name}</CardTitle>
               <CardDescription className="max-w-2xl">{venue.address}</CardDescription>
             </div>
-            {event.weatherSummary ? (
-              <Badge className="gap-1 bg-sky-100 text-sky-800 dark:bg-sky-950 dark:text-sky-300" variant="secondary">
-                <CloudSun className="h-3.5 w-3.5" />
-                {event.weatherSummary}
-              </Badge>
-            ) : null}
+            <div className="flex flex-wrap items-center gap-2">
+              {event.weatherSummary ? (
+                <Badge className="gap-1 bg-sky-100 text-sky-800 dark:bg-sky-950 dark:text-sky-300" variant="secondary">
+                  <CloudSun className="h-3.5 w-3.5" />
+                  {event.weatherSummary}
+                </Badge>
+              ) : null}
+              {distanceFromUserKm !== null ? (
+                <Badge className="gap-1 bg-sky-100 text-sky-900 dark:bg-sky-950 dark:text-sky-200" variant="secondary">
+                  <MapPin className="h-3.5 w-3.5" />
+                  {formatKm(distanceFromUserKm)} away
+                </Badge>
+              ) : null}
+            </div>
           </div>
         </CardHeader>
       </div>
