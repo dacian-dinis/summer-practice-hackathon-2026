@@ -1,8 +1,14 @@
+import type { Metadata } from "next";
 import dynamic from "next/dynamic";
+import { MapPin } from "lucide-react";
 
 import type { PulseMapProps } from "@/components/pulse-map";
 import { prisma } from "@/lib/prisma";
 import { todayDate } from "@/lib/today";
+
+export const metadata: Metadata = {
+  title: "Map",
+};
 
 const PulseMap = dynamic(() => import("@/components/pulse-map"), {
   ssr: false,
@@ -135,6 +141,10 @@ export default async function MapPage(): Promise<JSX.Element> {
   return (
     <div className="space-y-6">
       <section className="space-y-2">
+        <div className="flex items-center gap-2 text-sm font-medium text-neutral-600">
+          <MapPin className="h-4 w-4" />
+          Venues and live play
+        </div>
         <h1 className="text-4xl font-semibold tracking-tight text-neutral-950">Pulse Map</h1>
         <p className="max-w-2xl text-sm text-neutral-600">
           Live view of today&apos;s forming groups, active venues, and scheduled events across Bucharest.

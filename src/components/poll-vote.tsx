@@ -213,7 +213,7 @@ export function PollVote({
             return (
               <Button
                 className={cn(
-                  "h-auto min-h-12 rounded-full border px-4 py-3 text-left",
+                  "h-auto min-h-10 rounded-full border px-4 py-3 text-left",
                   isSelected
                     ? "border-emerald-300 bg-emerald-50 text-emerald-900 hover:bg-emerald-100"
                     : "border-neutral-200 bg-white text-neutral-900 hover:bg-neutral-50",

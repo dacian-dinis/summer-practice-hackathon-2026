@@ -1,5 +1,6 @@
+import type { Metadata } from "next";
 import Link from "next/link";
-import { CalendarDays, ChevronRight } from "lucide-react";
+import { CalendarDays, ChevronRight, Users } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -13,6 +14,10 @@ import {
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { todayDate } from "@/lib/today";
+
+export const metadata: Metadata = {
+  title: "Groups",
+};
 
 const SPORT_EMOJI: Record<string, string> = {
   Basketball: "🏀",
@@ -225,6 +230,7 @@ export default async function GroupsPage(): Promise<JSX.Element> {
       <section className="overflow-hidden rounded-3xl border border-neutral-200 bg-[linear-gradient(135deg,#f8fafc_0%,#ffffff_52%,#dbeafe_100%)] p-8 shadow-sm">
         <div className="space-y-2">
           <Badge className="w-fit" variant="secondary">
+            <Users className="mr-2 h-3.5 w-3.5" />
             Your Groups
           </Badge>
           <h1 className="text-4xl font-semibold tracking-tight text-neutral-950">Play plans, organized.</h1>

@@ -1,6 +1,6 @@
 "use client";
 
-import { Loader2, MapPin } from "lucide-react";
+import { Loader2, MapPin, Sparkles } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { z } from "zod";
@@ -14,6 +14,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useToast } from "@/components/ui/use-toast";
 
 const copilotVenueSchema = z
   .object({
@@ -63,6 +64,7 @@ export function CaptainCopilot({
   isCaptain,
 }: CaptainCopilotProps): JSX.Element | null {
   const router = useRouter();
+  const { toast } = useToast();
   const [suggestion, setSuggestion] = useState<z.infer<typeof copilotResponseSchema> | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -100,6 +102,9 @@ export function CaptainCopilot({
       }
 
       setSuggestion(parsed.data);
+      toast({
+        title: parsed.data.fallback ? "Using fallback suggestions" : "✨ Copilot ready",
+      });
     } catch {
       setError("Could not generate copilot suggestions.");
     } finally {
@@ -155,13 +160,13 @@ export function CaptainCopilot({
   return (
     <div className="space-y-4">
       <Button
-        className="bg-neutral-950 text-white hover:opacity-95"
+        className="min-h-10 bg-neutral-950 text-white hover:opacity-95"
         disabled={isLoading || isPostingPoll || isRefreshing}
         onClick={() => void handleGenerateSuggestion()}
         type="button"
       >
-        {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-        ✨ AI Captain Copilot
+        {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+        AI Captain Copilot
       </Button>
 
       {error ? (
@@ -212,7 +217,7 @@ export function CaptainCopilot({
             </div>
 
             <Button
-              className="bg-emerald-600 text-white hover:opacity-95"
+              className="min-h-10 bg-emerald-600 text-white hover:opacity-95"
               disabled={isPostingPoll || isRefreshing}
               onClick={() => void handlePostPoll()}
               type="button"

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Activity, Flame, Swords } from "lucide-react";
 
 import { ProfileForm } from "@/app/client-components";
@@ -6,6 +7,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { todayDate } from "@/lib/today";
+
+export const metadata: Metadata = {
+  title: "Profile",
+};
 
 export default async function ProfilePage(): Promise<JSX.Element> {
   const currentUser = await getCurrentUser();

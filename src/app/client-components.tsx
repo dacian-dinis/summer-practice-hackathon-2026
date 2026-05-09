@@ -2,7 +2,7 @@
 
 import { Loader2, Save, Sparkles, Target, UserRound, Zap } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useState } from "react";
 
 import type { SaveProfileInput } from "@/app/profile/actions";
 import { saveProfile } from "@/app/profile/actions";
@@ -66,11 +66,12 @@ export function AvailabilityToggle({
 }: AvailabilityToggleProps): JSX.Element {
   const router = useRouter();
   const { toast } = useToast();
-  const [isPending, startTransition] = useTransition();
+  const [pendingStatus, setPendingStatus] = useState<"YES" | "NO" | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
 
   async function updateAvailability(status: "YES" | "NO"): Promise<void> {
     setNotice(null);
+    setPendingStatus(status);
 
     try {
       const response = await fetch("/api/availability", {
@@ -87,12 +88,12 @@ export function AvailabilityToggle({
         return;
       }
 
-      startTransition(() => {
-        router.refresh();
-      });
+      router.refresh();
     } catch {
       setNotice(`Could not update ${sportName}.`);
       toast({ title: "Availability update failed" });
+    } finally {
+      setPendingStatus(null);
     }
   }
 
@@ -101,30 +102,30 @@ export function AvailabilityToggle({
       <div className="flex gap-2">
         <Button
           className={cn(
-            "flex-1",
+            "min-h-10 flex-1",
             currentStatus === "YES" && "bg-emerald-600 text-white hover:opacity-95",
           )}
-          disabled={isPending}
+          disabled={pendingStatus !== null}
           onClick={() => void updateAvailability("YES")}
           size="sm"
           type="button"
           variant={currentStatus === "YES" ? "default" : "outline"}
         >
-          {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+          {pendingStatus === "YES" ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
           Yes
         </Button>
         <Button
           className={cn(
-            "flex-1",
+            "min-h-10 flex-1",
             currentStatus === "NO" && "bg-rose-600 text-white hover:opacity-95",
           )}
-          disabled={isPending}
+          disabled={pendingStatus !== null}
           onClick={() => void updateAvailability("NO")}
           size="sm"
           type="button"
           variant={currentStatus === "NO" ? "default" : "outline"}
         >
-          {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+          {pendingStatus === "NO" ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
           No
         </Button>
       </div>
@@ -134,12 +135,14 @@ export function AvailabilityToggle({
 }
 
 export function FindGroupButton({ sportIds }: FindGroupButtonProps): JSX.Element {
+  const router = useRouter();
   const { toast } = useToast();
-  const [isPending, startTransition] = useTransition();
+  const [isPending, setIsPending] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
 
   async function handleClick(): Promise<void> {
     setNotice(null);
+    setIsPending(true);
 
     try {
       const response = await fetch("/api/match", {
@@ -150,27 +153,33 @@ export function FindGroupButton({ sportIds }: FindGroupButtonProps): JSX.Element
         body: JSON.stringify({ sportIds }),
       });
 
-      if (response.status === 404) {
-        setNotice("Matching not ready");
-        toast({ title: "Matching not ready" });
-        return;
-      }
-
       if (!response.ok) {
         setNotice("Could not start matching.");
+        toast({ title: "Couldn't run matching." });
         return;
       }
 
-      startTransition(() => undefined);
+      const data: { created: Array<{ id: string }>; message?: string } = await response.json();
+
+      if (data.created.length > 0) {
+        toast({ title: "You joined a group! Check Groups tab." });
+        router.refresh();
+        return;
+      }
+
+      toast({ title: "Not enough players yet — invite a friend!" });
     } catch {
       setNotice("Could not start matching.");
+      toast({ title: "Couldn't run matching." });
+    } finally {
+      setIsPending(false);
     }
   }
 
   return (
     <div className="space-y-2">
       <Button
-        className="w-full bg-neutral-950 text-white hover:opacity-95"
+        className="min-h-10 w-full bg-neutral-950 text-white hover:opacity-95"
         disabled={isPending}
         onClick={() => void handleClick()}
         size="lg"
@@ -226,8 +235,8 @@ export function ProfileForm({
 }: ProfileFormProps): JSX.Element {
   const router = useRouter();
   const { toast } = useToast();
-  const [isSaving, startSaving] = useTransition();
-  const [isDetecting, startDetecting] = useTransition();
+  const [isSaving, setIsSaving] = useState(false);
+  const [isDetecting, setIsDetecting] = useState(false);
   const [name, setName] = useState(initialName);
   const [bio, setBio] = useState(initialBio);
   const [skill, setSkill] = useState(initialSkill);
@@ -263,6 +272,7 @@ export function ProfileForm({
 
   async function handleDetectSports(): Promise<void> {
     setNotice(null);
+    setIsDetecting(true);
 
     try {
       const response = await fetch("/api/ai/extract-sports", {
@@ -274,12 +284,12 @@ export function ProfileForm({
       });
 
       if (response.status === 404) {
-        showNotice("AI not ready");
+        showNotice("AI not available");
         return;
       }
 
       if (!response.ok) {
-        showNotice("Could not detect sports");
+        showNotice("AI not available");
         return;
       }
 
@@ -292,22 +302,31 @@ export function ProfileForm({
       }
 
       setSelectedSportIds(Array.from(new Set(nextSportIds)));
+      toast({ title: `AI extracted ${nextSportIds.length} sports` });
     } catch {
-      showNotice("Could not detect sports");
+      showNotice("AI not available");
+    } finally {
+      setIsDetecting(false);
     }
   }
 
   async function handleSave(): Promise<void> {
     setNotice(null);
-    const result = await saveProfile(buildPayload());
+    setIsSaving(true);
 
-    if (!result.ok) {
-      showNotice(result.error ?? "Could not save profile");
-      return;
+    try {
+      const result = await saveProfile(buildPayload());
+
+      if (!result.ok) {
+        showNotice(result.error ?? "Could not save profile");
+        return;
+      }
+
+      showNotice("Profile saved");
+      router.refresh();
+    } finally {
+      setIsSaving(false);
     }
-
-    showNotice("Profile saved");
-    router.refresh();
   }
 
   return (
@@ -354,13 +373,9 @@ export function ProfileForm({
                     Bio
                   </label>
                   <Button
-                    className="shrink-0"
+                    className="min-h-10 shrink-0"
                     disabled={isDetecting}
-                    onClick={() => {
-                      startDetecting(() => {
-                        void handleDetectSports();
-                      });
-                    }}
+                    onClick={() => void handleDetectSports()}
                     size="sm"
                     type="button"
                     variant="outline"
@@ -425,8 +440,9 @@ export function ProfileForm({
 
                 return (
                   <button
+                    aria-pressed={selected}
                     className={cn(
-                      "rounded-full border px-0 py-0 transition-transform hover:-translate-y-0.5",
+                      "min-h-10 rounded-full border px-0 py-0 transition-transform hover:-translate-y-0.5",
                       selected ? "border-neutral-900" : "border-neutral-200",
                     )}
                     key={sport.id}
@@ -448,8 +464,8 @@ export function ProfileForm({
                           className={cn(
                             "rounded-full px-2 py-0.5 text-[10px] font-bold tracking-wide",
                             status === "YES"
-                              ? "bg-emerald-500/20 text-emerald-100"
-                              : "bg-rose-500/20 text-rose-100",
+                              ? "bg-emerald-100 text-emerald-900 border-emerald-300"
+                              : "bg-rose-100 text-rose-900 border-rose-300",
                           )}
                         >
                           {status}
@@ -464,13 +480,9 @@ export function ProfileForm({
 
           <div className="flex justify-end">
             <Button
-              className="min-w-[160px] bg-neutral-950 text-white hover:opacity-95"
+              className="min-h-10 min-w-[160px] bg-neutral-950 text-white hover:opacity-95"
               disabled={isSaving}
-              onClick={() => {
-                startSaving(() => {
-                  void handleSave();
-                });
-              }}
+              onClick={() => void handleSave()}
               type="button"
             >
               {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}

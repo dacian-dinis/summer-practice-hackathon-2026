@@ -138,8 +138,15 @@ function findNearestVenuePosition(
 }
 
 export default function PulseMap({ groups, venues, events }: PulseMapProps): JSX.Element {
+  const showEmptyOverlay = groups.length === 0 && events.length === 0;
+
   return (
-    <div className="h-[540px] w-full">
+    <div className="relative h-[70vh] min-h-[420px] w-full">
+      {showEmptyOverlay ? (
+        <div className="pointer-events-none absolute left-4 top-4 z-[500] rounded-full border border-white/70 bg-white/85 px-4 py-2 text-sm text-neutral-700 shadow-sm backdrop-blur">
+          No live games yet
+        </div>
+      ) : null}
       <LeafletMapContainer className="h-full w-full">
         <MapViewport />
         <LeafletTileLayer

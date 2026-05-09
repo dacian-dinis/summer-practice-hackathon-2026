@@ -2,14 +2,15 @@ import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import type { ReactNode } from "react";
 
-import { getUserNameFromSlug, slugifyUser, USER_NAMES } from "@/lib/users";
 import { Nav } from "@/components/nav";
+import { Toaster } from "@/components/ui/toaster";
+import { getUserNameFromSlug, slugifyUser, USER_NAMES } from "@/lib/users";
 
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Summer Practice Hackathon 2026",
-  description: "Next.js shell with navigation and user switching.",
+  title: "ShowUp2Move",
+  description: "Pickup sports without the chaos.",
 };
 
 function getInitialUserName() {
@@ -32,7 +33,8 @@ export default function RootLayout({ children }: RootLayoutProps): JSX.Element {
     <html lang="en">
       <body className="min-h-screen bg-neutral-50 text-neutral-950">
         <Nav currentUserName={getInitialUserName()} />
-        <main className="mx-auto max-w-5xl px-6 py-10">{children}</main>
+        <main className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-10">{children}</main>
+        <Toaster />
       </body>
     </html>
   );

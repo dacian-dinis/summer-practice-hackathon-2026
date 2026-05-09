@@ -229,14 +229,15 @@ export function GroupChat({
           <div ref={bottomRef} />
         </div>
 
-        <form className="flex gap-2" onSubmit={(event) => void handleSubmit(event)}>
+        <form className="flex flex-col gap-2 sm:flex-row" onSubmit={(event) => void handleSubmit(event)}>
           <Input
+            className="min-h-10"
             maxLength={500}
             onChange={(event) => setText(event.target.value)}
             placeholder="Send a message to the group"
             value={text}
           />
-          <Button disabled={isSending || text.trim().length === 0} type="submit">
+          <Button className="min-h-10 sm:w-auto" disabled={isSending || text.trim().length === 0} type="submit">
             {isSending ? <Loader2 className="h-4 w-4 animate-spin" /> : <SendHorizonal className="h-4 w-4" />}
           </Button>
         </form>

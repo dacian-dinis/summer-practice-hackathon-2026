@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, CalendarDays, CircleOff, Users } from "lucide-react";
 
@@ -14,6 +15,10 @@ import {
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { todayDate } from "@/lib/today";
+
+export const metadata: Metadata = {
+  title: "ShowUp2Move",
+};
 
 const SPORT_EMOJI: Record<string, string> = {
   Football: "⚽",
@@ -79,7 +84,7 @@ export default async function HomePage(): Promise<JSX.Element> {
           <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-neutral-100 text-neutral-700">
             <CircleOff className="h-5 w-5" />
           </div>
-          <CardTitle>ShowUpToday starts with your sports</CardTitle>
+          <CardTitle>Set sports in profile to start</CardTitle>
           <CardDescription>
             Pick the sports you actually play so today&apos;s availability can mean something.
           </CardDescription>
@@ -120,6 +125,11 @@ export default async function HomePage(): Promise<JSX.Element> {
 
   return (
     <div className="space-y-8">
+      <section className="space-y-2">
+        <h1 className="text-3xl font-semibold tracking-tight text-neutral-950 sm:text-4xl">ShowUp2Move</h1>
+        <p className="text-sm text-neutral-600">Pickup sports without the chaos.</p>
+      </section>
+
       <section className="overflow-hidden rounded-3xl border border-neutral-200 bg-[linear-gradient(135deg,#f5f7fb_0%,#ffffff_42%,#dcfce7_100%)] p-8 shadow-sm">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="space-y-4">
@@ -153,6 +163,20 @@ export default async function HomePage(): Promise<JSX.Element> {
           </Card>
         </div>
       </section>
+
+      {availabilityToday.length === 0 ? (
+        <Card className="border-dashed border-neutral-300 bg-white">
+          <CardContent className="flex flex-col gap-3 p-5 sm:flex-row sm:items-center sm:justify-between">
+            <div className="space-y-1">
+              <div className="font-medium text-neutral-950">Mark Yes for any sport to find a group</div>
+              <div className="text-sm text-neutral-600">
+                Your sports are set. Add today&apos;s availability so matching has something to work with.
+              </div>
+            </div>
+            <Users className="h-5 w-5 text-neutral-400" />
+          </CardContent>
+        </Card>
+      ) : null}
 
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {user.userSports.map((item) => {
