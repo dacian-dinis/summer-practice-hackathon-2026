@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 
 export function MarketingNav(): JSX.Element {
   return (
-    <header className="sticky top-0 z-40 border-b border-neutral-200/80 bg-white/80 backdrop-blur-xl dark:border-neutral-800/80 dark:bg-neutral-950/80">
+    <header className="sticky top-0 z-40 border-b-2 border-brand-ink bg-brand-cream/90 backdrop-blur-xl dark:border-neutral-50/30 dark:bg-neutral-950/90">
       <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-4 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
         <Link className="flex items-center" href="/">
           <Logo size="md" />
@@ -16,12 +16,21 @@ export function MarketingNav(): JSX.Element {
           <ThemeToggle />
           <div className="flex items-center gap-2">
             <Link href="/login">
-              <Button type="button" variant="ghost">
+              <Button
+                className="rounded-md font-bold uppercase tracking-wider"
+                type="button"
+                variant="ghost"
+              >
                 Log in
               </Button>
             </Link>
             <Link href="/register">
-              <Button type="button">Sign up</Button>
+              <Button
+                className="rounded-md bg-brand text-white hover:bg-brand-deep font-bold uppercase tracking-wider"
+                type="button"
+              >
+                Sign up
+              </Button>
             </Link>
           </div>
         </div>

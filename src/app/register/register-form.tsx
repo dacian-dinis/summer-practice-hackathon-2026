@@ -77,9 +77,9 @@ export function RegisterForm(): JSX.Element {
   }
 
   return (
-    <Card className="w-full max-w-md border-neutral-200 bg-white/95 shadow-xl dark:border-neutral-800 dark:bg-neutral-900/95">
+    <Card className="w-full max-w-md rounded-md border-2 border-brand-ink bg-white shadow-none dark:border-neutral-50 dark:bg-neutral-950">
       <CardHeader className="space-y-3">
-        <CardTitle className="text-3xl">Create account</CardTitle>
+        <CardTitle className="font-display text-4xl">Create account</CardTitle>
         <CardDescription>
           Set up a new player account and continue straight into onboarding.
         </CardDescription>
@@ -142,7 +142,11 @@ export function RegisterForm(): JSX.Element {
               {error}
             </div>
           ) : null}
-          <Button className="w-full" disabled={isSubmitting} type="submit">
+          <Button
+            className="w-full rounded-md bg-brand text-white hover:bg-brand-deep font-bold uppercase tracking-wider"
+            disabled={isSubmitting}
+            type="submit"
+          >
             {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
             Create account
           </Button>

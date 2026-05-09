@@ -113,51 +113,45 @@ export async function DashboardHome({ currentUser }: DashboardHomeProps): Promis
 
   return (
     <div className="space-y-8">
-      <section className="space-y-2">
-        <h1 className="text-3xl font-semibold tracking-tight text-neutral-950 dark:text-neutral-50 sm:text-4xl">
-          ShowUp2Move
-        </h1>
-        <p className="text-sm text-neutral-600 dark:text-neutral-400">
-          Pickup sports without the chaos near {city.name}.
-        </p>
-      </section>
-
-      <section className="overflow-hidden rounded-3xl border border-neutral-200 bg-[linear-gradient(135deg,#f5f7fb_0%,#ffffff_42%,#dcfce7_100%)] p-8 shadow-sm dark:border-neutral-800 dark:bg-[linear-gradient(135deg,#111827_0%,#0a0a0a_44%,#052e16_100%)]">
+      <section className="rounded-md border-2 border-brand-ink bg-brand-cream p-8 dark:border-neutral-50 dark:bg-neutral-950">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="space-y-4">
-            <Badge className="w-fit" variant="secondary">
-              <CalendarDays className="mr-2 h-3.5 w-3.5" />
-              ShowUpToday
-            </Badge>
-            <div className="space-y-2">
-              <h1 className="text-4xl font-semibold tracking-tight text-neutral-950 dark:text-neutral-50">
-                What are you up for today, {user.name}?
+            <div className="font-mono-label text-brand-ink/60 dark:text-neutral-400">
+              <CalendarDays className="mr-2 inline h-3.5 w-3.5" />
+              SHOWUPTODAY · {city.name.toUpperCase()}
+            </div>
+            <div className="space-y-3">
+              <h1 className="font-display text-4xl leading-[0.95] text-brand-ink dark:text-neutral-50 sm:text-5xl lg:text-6xl">
+                What are you up for today, <span className="text-brand">{user.name}</span>?
               </h1>
-              <p className="max-w-2xl text-sm leading-6 text-neutral-600 dark:text-neutral-400">
-                Mark each sport once and the matching flow can use your real availability instead of guessing.
+              <p className="max-w-2xl text-sm leading-6 text-brand-ink/70 dark:text-neutral-400">
+                Mark each sport once and matching uses your real availability instead of guessing.
               </p>
               <Link href="/events/new">
-                <Button size="sm" type="button" variant="outline">
-                  Create event
+                <Button
+                  className="rounded-md border-2 border-brand-ink bg-transparent font-bold uppercase tracking-wider text-brand-ink hover:bg-brand-ink hover:text-white dark:border-neutral-50 dark:text-neutral-50 dark:hover:bg-neutral-50 dark:hover:text-neutral-950"
+                  size="sm"
+                  type="button"
+                  variant="outline"
+                >
+                  + Create event
                 </Button>
               </Link>
             </div>
           </div>
-          <Card className="min-w-[280px] border-neutral-200 bg-white/80 backdrop-blur dark:border-neutral-800 dark:bg-neutral-900/80">
-            <CardContent className="p-5">
-              <div className="mb-2 flex items-center gap-2 text-sm font-medium text-neutral-700 dark:text-neutral-200">
-                <Users className="h-4 w-4" />
-                You&apos;re in for today
-              </div>
-              <div className="text-sm text-neutral-600 dark:text-neutral-400">
-                {yesSports.length > 0
-                  ? yesSports
-                      .map((item) => `${SPORT_EMOJI[item.sport.name] ?? "\u{1F3C5}"} ${item.sport.name}`)
-                      .join(", ")
-                  : "No sports confirmed yet."}
-              </div>
-            </CardContent>
-          </Card>
+          <div className="min-w-[280px] rounded-md border-2 border-brand-ink bg-white p-5 dark:border-neutral-50 dark:bg-neutral-950">
+            <div className="font-mono-label mb-2 flex items-center gap-2 text-brand-ink/60 dark:text-neutral-400">
+              <Users className="h-3.5 w-3.5" />
+              YOU&apos;RE IN FOR TODAY
+            </div>
+            <div className="font-display text-lg leading-snug text-brand-ink dark:text-neutral-50">
+              {yesSports.length > 0
+                ? yesSports
+                    .map((item) => `${SPORT_EMOJI[item.sport.name] ?? "\u{1F3C5}"} ${item.sport.name}`)
+                    .join(" · ")
+                : "Nothing locked yet."}
+            </div>
+          </div>
         </div>
       </section>
 
@@ -181,7 +175,7 @@ export async function DashboardHome({ currentUser }: DashboardHomeProps): Promis
 
           return (
             <Card
-              className="border-neutral-200 bg-white shadow-sm transition-transform hover:-translate-y-1 dark:border-neutral-800 dark:bg-neutral-900"
+              className="rounded-md border-2 border-brand-ink bg-white shadow-none transition-transform hover:-translate-y-1 hover:border-brand dark:border-neutral-50 dark:bg-neutral-950 dark:hover:border-brand"
               key={item.sportId}
             >
               <CardHeader className="space-y-4">

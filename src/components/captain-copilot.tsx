@@ -160,7 +160,7 @@ export function CaptainCopilot({
   return (
     <div className="space-y-4">
       <Button
-        className="min-h-10 bg-neutral-950 text-white hover:opacity-95"
+        className="min-h-11 rounded-md bg-bluebold text-white hover:bg-bluebold-deep font-bold uppercase tracking-wider"
         disabled={isLoading || isPostingPoll || isRefreshing}
         onClick={() => void handleGenerateSuggestion()}
         type="button"
@@ -176,7 +176,7 @@ export function CaptainCopilot({
       ) : null}
 
       {suggestion ? (
-        <Card className="border-neutral-200 bg-white shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
+        <Card className="rounded-md border-2 border-bluebold-deep bg-white shadow-none dark:border-bluebold dark:bg-neutral-950">
           <CardHeader className="space-y-4">
             <div className="flex flex-wrap items-center gap-2">
               <Badge className="bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-300" variant="secondary">
@@ -217,7 +217,7 @@ export function CaptainCopilot({
             </div>
 
             <Button
-              className="min-h-10 bg-emerald-600 text-white hover:opacity-95"
+              className="min-h-11 rounded-md bg-brand text-white hover:bg-brand-deep font-bold uppercase tracking-wider"
               disabled={isPostingPoll || isRefreshing}
               onClick={() => void handlePostPoll()}
               type="button"

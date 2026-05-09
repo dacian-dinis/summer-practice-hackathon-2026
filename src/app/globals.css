@@ -1,6 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Archivo+Black&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+  .font-display {
+    font-family: "Archivo Black", "Archivo", system-ui, sans-serif;
+    letter-spacing: -0.03em;
+  }
+  .font-body {
+    font-family: "Archivo", system-ui, sans-serif;
+  }
+  .font-mono-label {
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    font-size: 0.7rem;
+    font-weight: 500;
+  }
+}
 
 @layer base {
   :root {
@@ -54,5 +73,6 @@
 
   body {
     @apply bg-background text-foreground antialiased;
+    font-family: "Archivo", system-ui, sans-serif;
   }
 }

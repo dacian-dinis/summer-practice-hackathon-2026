@@ -39,6 +39,24 @@ const config: Config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        brand: {
+          DEFAULT: "#FC5200",
+          deep: "#C53F00",
+          cream: "#F4F1EA",
+          ink: "#0E0E10",
+        },
+        bluebold: {
+          DEFAULT: "#0077BC",
+          deep: "#005A91",
+        },
+        success: "#16A34A",
+        warning: "#D97706",
+        danger: "#DC2626",
+      },
+      fontFamily: {
+        display: ['"Archivo Black"', '"Archivo"', "system-ui", "sans-serif"],
+        body: ['"Archivo"', "system-ui", "sans-serif"],
+        monolabel: ['"JetBrains Mono"', "ui-monospace", "monospace"],
       },
       borderRadius: {
         lg: "var(--radius)",

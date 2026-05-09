@@ -36,7 +36,7 @@ export function EventCard({ event, venue }: EventCardProps): JSX.Element {
   const calendarUrl = `/api/events/${event.id}/ics`;
 
   return (
-    <Card className="overflow-hidden border-neutral-200 bg-white shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
+    <Card className="overflow-hidden rounded-md border-2 border-brand-ink bg-white shadow-none dark:border-neutral-50 dark:bg-neutral-950">
       <div className="bg-[linear-gradient(135deg,#eff6ff_0%,#ffffff_45%,#ecfccb_100%)] dark:bg-[linear-gradient(135deg,#172554_0%,#111827_45%,#1a2e05_100%)]">
         <CardHeader className="gap-3">
           <div className="flex flex-wrap items-start justify-between gap-3">

@@ -192,7 +192,7 @@ export function FindGroupButton({ sportIds }: FindGroupButtonProps): JSX.Element
   return (
     <div className="space-y-2">
       <Button
-        className="min-h-10 w-full bg-neutral-950 text-white hover:opacity-95"
+        className="min-h-12 w-full rounded-md bg-brand text-white hover:bg-brand-deep font-bold uppercase tracking-wider"
         disabled={isPending}
         onClick={() => void handleClick()}
         size="lg"
