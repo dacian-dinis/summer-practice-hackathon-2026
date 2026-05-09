@@ -9,11 +9,13 @@ type LogoProps = {
 };
 
 const SIZE_TO_HEIGHT: Record<NonNullable<LogoProps["size"]>, number> = {
-  sm: 28,
-  md: 40,
-  lg: 56,
+  sm: 32,
+  md: 44,
+  lg: 64,
   xl: 96,
 };
+
+const ASPECT = 1340 / 287;
 
 export function Logo({
   className,
@@ -21,16 +23,27 @@ export function Logo({
   size = "md",
 }: LogoProps): JSX.Element {
   const height = SIZE_TO_HEIGHT[size];
-  const width = Math.round(height * (820 / 460));
+  const width = Math.round(height * ASPECT);
 
   return (
-    <Image
-      alt="showup2move — social, sport, spontaneous"
-      className={cn("select-none", className)}
-      height={height}
-      priority={priority}
-      src="/showup2move-logo.png"
-      width={width}
-    />
+    <span className={cn("relative inline-block select-none", className)} style={{ width, height }}>
+      <Image
+        alt="showup2move — social, sport, spontaneous"
+        className="block dark:hidden"
+        height={height}
+        priority={priority}
+        src="/showup2move-logo.png"
+        width={width}
+      />
+      <Image
+        alt=""
+        aria-hidden="true"
+        className="hidden dark:block"
+        height={height}
+        priority={priority}
+        src="/showup2move-logo-dark.png"
+        width={width}
+      />
+    </span>
   );
 }
