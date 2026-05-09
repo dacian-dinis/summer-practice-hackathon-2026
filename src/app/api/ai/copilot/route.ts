@@ -4,6 +4,7 @@ import { z } from "zod";
 
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { resolveCity } from "@/lib/geo";
 
 const requestSchema = z
   .object({
@@ -19,8 +20,8 @@ const weatherResponseSchema = z.object({
   }),
 });
 
-const aiSystemPrompt =
-  'You are a pickup-sports captain assistant. Given a sport, weather, and 3 candidate venues, return JSON {"ranked":[{"venueId":"...","reasoning":"..."}, ...3 items], "suggestedTime":"HH:MM", "draftMessage":"≤120 chars", "weatherNote":"≤60 chars"}. Pick venues that suit the weather (indoor when raining/cold, any when sunny). suggestedTime must be 18:00–20:00. Output JSON only, no prose, no markdown fences.';
+const baseAiSystemPrompt =
+  'You are a pickup-sports captain assistant. Given a sport, weather, and 3 candidate venues, return JSON {"ranked":[{"venueId":"...","reasoning":"..."}, ...3 items], "suggestedTime":"HH:MM", "draftMessage":"<=120 chars", "weatherNote":"<=60 chars"}. Pick venues that suit the weather (indoor when raining/cold, any when sunny). suggestedTime must be 18:00-20:00. Output JSON only, no prose, no markdown fences.';
 
 const defaultWeatherSummary = "🌤️ pleasant";
 
@@ -29,12 +30,10 @@ function createAiResponseSchema(validVenueIds: Set<string>) {
     .object({
       ranked: z
         .array(
-          z
-            .object({
-              venueId: z.string().min(1),
-              reasoning: z.string().min(1),
-            })
-            .strict(),
+          z.object({
+            venueId: z.string().min(1),
+            reasoning: z.string().min(1),
+          }),
         )
         .length(3),
       suggestedTime: z
@@ -58,10 +57,9 @@ function createAiResponseSchema(validVenueIds: Set<string>) {
 
           return totalMinutes >= 18 * 60 && totalMinutes <= 20 * 60;
         }),
-      draftMessage: z.string().max(120),
-      weatherNote: z.string().max(60),
+      draftMessage: z.string().transform((s) => s.slice(0, 140)),
+      weatherNote: z.string().transform((s) => s.slice(0, 80)),
     })
-    .strict()
     .superRefine((value, context) => {
       const seenVenueIds = new Set<string>();
 
@@ -85,6 +83,10 @@ function createAiResponseSchema(validVenueIds: Set<string>) {
         seenVenueIds.add(item.venueId);
       });
     });
+}
+
+function buildAiSystemPrompt(cityName: string): string {
+  return `${baseAiSystemPrompt} The captain is in ${cityName}; prefer venues in ${cityName}.`;
 }
 
 function describeWind(windSpeed: number): string {
@@ -151,32 +153,32 @@ function extractFirstJsonObject(input: string): unknown | null {
   return null;
 }
 
-async function getWeatherSummary(): Promise<string> {
+async function getWeatherSummary(lat: number, lng: number): Promise<string> {
   try {
-    const response = await Promise.race([
-      fetch(
-        "https://api.open-meteo.com/v1/forecast?latitude=44.4268&longitude=26.1025&current_weather=true&timezone=Europe%2FBucharest",
-        {
-          cache: "no-store",
-        },
-      ),
-      new Promise<never>((_, reject) => {
-        setTimeout(() => reject(new Error("Weather timeout")), 1500);
-      }),
-    ]);
+    const weatherUrl = new URL("https://api.open-meteo.com/v1/forecast");
 
-    const json = await response.json();
+    weatherUrl.searchParams.set("latitude", String(lat));
+    weatherUrl.searchParams.set("longitude", String(lng));
+    weatherUrl.searchParams.set("current_weather", "true");
+    weatherUrl.searchParams.set("timezone", "Europe/Bucharest");
+
+    const response = await fetch(weatherUrl, {
+      cache: "no-store",
+      signal: AbortSignal.timeout(1500),
+    });
+
+    if (!response.ok) {
+      return defaultWeatherSummary;
+    }
+
+    const json: unknown = await response.json();
     const parsed = weatherResponseSchema.safeParse(json);
 
     if (!parsed.success) {
       return defaultWeatherSummary;
     }
 
-    const {
-      temperature,
-      weathercode,
-      windspeed,
-    } = parsed.data.current_weather;
+    const { temperature, weathercode, windspeed } = parsed.data.current_weather;
 
     return `${weatherEmoji(weathercode)} ${Math.round(temperature)}°C, ${describeWind(windspeed)}`;
   } catch {
@@ -187,6 +189,7 @@ async function getWeatherSummary(): Promise<string> {
 async function getAiSuggestion(input: {
   sport: string;
   weatherSummary: string;
+  cityName: string;
   venues: Array<{
     venueId: string;
     name: string;
@@ -207,16 +210,20 @@ async function getAiSuggestion(input: {
         model: "claude-haiku-4-5-20251001",
         max_tokens: 500,
         temperature: 0.3,
-        system: aiSystemPrompt,
+        system: buildAiSystemPrompt(input.cityName),
         messages: [
           {
             role: "user",
-            content: JSON.stringify(input),
+            content: JSON.stringify({
+              sport: input.sport,
+              weatherSummary: input.weatherSummary,
+              venues: input.venues,
+            }),
           },
         ],
       }),
       new Promise<never>((_, reject) => {
-        setTimeout(() => reject(new Error("Anthropic timeout")), 2000);
+        setTimeout(() => reject(new Error("Anthropic timeout")), 8000);
       }),
     ]);
 
@@ -264,7 +271,7 @@ function buildFallback(input: {
       reasoning: `Solid pick for ${input.sport}.`,
     })),
     suggestedTime: "19:00",
-    draftMessage: "Tonight at 19:00 — let's play!",
+    draftMessage: "Tonight at 19:00 - let's play!",
     weatherNote: input.weatherSummary || "Mild ☀️",
     fallback: true,
   };
@@ -272,6 +279,7 @@ function buildFallback(input: {
 
 export async function POST(request: Request): Promise<Response> {
   try {
+    const city = await resolveCity();
     const rawBody = await request.text();
     let json: unknown = null;
 
@@ -311,14 +319,19 @@ export async function POST(request: Request): Promise<Response> {
       return NextResponse.json({ message: "Forbidden" }, { status: 403 });
     }
 
-    const venueRows = await prisma.venueSport.findMany({
-      where: { sportId: group.sportId },
+    const prioritizedVenueRows = await prisma.venueSport.findMany({
+      where: {
+        sportId: group.sportId,
+        venue: {
+          city: city.slug,
+        },
+      },
       include: { venue: true },
       take: 3,
     });
-    const prioritizedVenues = venueRows.map((row) => row.venue);
+    const prioritizedVenues = prioritizedVenueRows.map((row) => row.venue);
 
-    const fallbackVenueRows =
+    const fallbackVenues =
       prioritizedVenues.length < 3
         ? await prisma.venue.findMany({
             where: {
@@ -330,7 +343,7 @@ export async function POST(request: Request): Promise<Response> {
           })
         : [];
 
-    const venues = [...prioritizedVenues, ...fallbackVenueRows];
+    const venues = [...prioritizedVenues, ...fallbackVenues];
 
     if (venues.length < 3) {
       return NextResponse.json(
@@ -339,10 +352,11 @@ export async function POST(request: Request): Promise<Response> {
       );
     }
 
-    const weatherSummary = await getWeatherSummary();
+    const weatherSummary = await getWeatherSummary(city.lat, city.lng);
     const aiSuggestion = await getAiSuggestion({
       sport: group.sport.name,
       weatherSummary,
+      cityName: city.name,
       venues: venues.map((venue) => ({
         venueId: venue.id,
         name: venue.name,

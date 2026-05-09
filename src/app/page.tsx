@@ -13,6 +13,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { getCurrentUser } from "@/lib/auth";
+import { resolveCity } from "@/lib/geo";
 import { prisma } from "@/lib/prisma";
 import { todayDate } from "@/lib/today";
 
@@ -41,6 +42,7 @@ function statusLabel(status: string | null): string {
 }
 
 export default async function HomePage(): Promise<JSX.Element> {
+  const city = await resolveCity();
   const currentUser = await getCurrentUser();
 
   if (!currentUser) {
@@ -127,7 +129,7 @@ export default async function HomePage(): Promise<JSX.Element> {
     <div className="space-y-8">
       <section className="space-y-2">
         <h1 className="text-3xl font-semibold tracking-tight text-neutral-950 sm:text-4xl">ShowUp2Move</h1>
-        <p className="text-sm text-neutral-600">Pickup sports without the chaos.</p>
+        <p className="text-sm text-neutral-600">Pickup sports without the chaos near {city.name}.</p>
       </section>
 
       <section className="overflow-hidden rounded-3xl border border-neutral-200 bg-[linear-gradient(135deg,#f5f7fb_0%,#ffffff_42%,#dcfce7_100%)] p-8 shadow-sm">

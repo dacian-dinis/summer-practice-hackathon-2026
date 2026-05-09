@@ -63,6 +63,7 @@ const users = [
 
 const venues = [
   {
+    city: "bucharest",
     name: "Stadionul Național",
     lat: 44.4378,
     lng: 26.1546,
@@ -71,6 +72,7 @@ const venues = [
     sports: ["Football"],
   },
   {
+    city: "bucharest",
     name: "BNR Tennis Club",
     lat: 44.4495,
     lng: 26.0863,
@@ -79,6 +81,7 @@ const venues = [
     sports: ["Tennis"],
   },
   {
+    city: "bucharest",
     name: "Sala Polivalentă",
     lat: 44.4216,
     lng: 26.1133,
@@ -87,6 +90,7 @@ const venues = [
     sports: ["Basketball", "Volleyball"],
   },
   {
+    city: "bucharest",
     name: "Padel Park Băneasa",
     lat: 44.5051,
     lng: 26.084,
@@ -95,6 +99,7 @@ const venues = [
     sports: ["Padel"],
   },
   {
+    city: "bucharest",
     name: "Sky Arena",
     lat: 44.4513,
     lng: 26.0712,
@@ -103,11 +108,66 @@ const venues = [
     sports: ["Volleyball", "Basketball"],
   },
   {
+    city: "bucharest",
     name: "World Class Sun Plaza",
     lat: 44.3989,
     lng: 26.123,
     pricePerHour: 120,
     address: "Calea Văcărești 391",
+    sports: ["Tennis", "Padel"],
+  },
+  {
+    city: "timisoara",
+    name: "Stadion Dan Păltinișanu",
+    lat: 45.733,
+    lng: 21.248,
+    pricePerHour: 150,
+    address: "Aleea F.C. Ripensia 7",
+    sports: ["Football"],
+  },
+  {
+    city: "timisoara",
+    name: "Tennis Club Bega",
+    lat: 45.7517,
+    lng: 21.2392,
+    pricePerHour: 70,
+    address: "Calea Bogdăneștilor 32",
+    sports: ["Tennis"],
+  },
+  {
+    city: "timisoara",
+    name: "Sala Olimpia",
+    lat: 45.7556,
+    lng: 21.228,
+    pricePerHour: 130,
+    address: "Aleea Sportivilor 1",
+    sports: ["Basketball", "Volleyball"],
+  },
+  {
+    city: "timisoara",
+    name: "Padel Park Iulius",
+    lat: 45.767,
+    lng: 21.227,
+    pricePerHour: 90,
+    address: "Demetriade 1",
+    sports: ["Padel", "Tennis"],
+  },
+  {
+    city: "timisoara",
+    name: "Sala Constantin Jude",
+    lat: 45.7423,
+    lng: 21.232,
+    pricePerHour: 110,
+    address: "Bd. Take Ionescu 56",
+    sports: ["Basketball", "Volleyball"],
+  },
+  {
+    city: "timisoara",
+    name: "World Class Iulius Town",
+    lat: 45.7665,
+    lng: 21.2278,
+    pricePerHour: 100,
+    address: "Demetriade 1",
     sports: ["Tennis", "Padel"],
   },
 ] as const;
@@ -202,6 +262,7 @@ async function main() {
       ? await prisma.venue.update({
           where: { id: existingVenue.id },
           data: {
+            city: venue.city,
             lat: venue.lat,
             lng: venue.lng,
             pricePerHour: venue.pricePerHour,
@@ -211,6 +272,7 @@ async function main() {
       : await prisma.venue.create({
           data: {
             name: venue.name,
+            city: venue.city,
             lat: venue.lat,
             lng: venue.lng,
             pricePerHour: venue.pricePerHour,

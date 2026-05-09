@@ -93,7 +93,7 @@ export async function POST(request: Request) {
     const result = await Promise.race<string[]>([
       extractSportsFromBio(parsed.data.bio),
       new Promise<string[]>((resolve) => {
-        setTimeout(() => resolve([]), 1500);
+        setTimeout(() => resolve([]), 6000);
       }),
     ]);
 

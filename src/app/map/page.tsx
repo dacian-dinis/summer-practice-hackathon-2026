@@ -3,6 +3,7 @@ import dynamic from "next/dynamic";
 import { MapPin } from "lucide-react";
 
 import type { PulseMapProps } from "@/components/pulse-map";
+import { resolveCity } from "@/lib/geo";
 import { prisma } from "@/lib/prisma";
 import { todayDate } from "@/lib/today";
 
@@ -23,6 +24,7 @@ function formatEventTime(startsAt: Date): string {
 }
 
 export default async function MapPage(): Promise<JSX.Element> {
+  const city = await resolveCity();
   const today = todayDate();
   const startOfDay = new Date(`${today}T00:00:00.000Z`);
   const endOfDay = new Date(`${today}T23:59:59.999Z`);
@@ -56,6 +58,9 @@ export default async function MapPage(): Promise<JSX.Element> {
       },
     }),
     prisma.venue.findMany({
+      where: {
+        city: city.slug,
+      },
       include: {
         venueSports: {
           include: {
@@ -76,6 +81,9 @@ export default async function MapPage(): Promise<JSX.Element> {
         startsAt: {
           gte: startOfDay,
           lte: endOfDay,
+        },
+        venue: {
+          city: city.slug,
         },
       },
       include: {
@@ -147,12 +155,18 @@ export default async function MapPage(): Promise<JSX.Element> {
         </div>
         <h1 className="text-4xl font-semibold tracking-tight text-neutral-950">Pulse Map</h1>
         <p className="max-w-2xl text-sm text-neutral-600">
-          Live view of today&apos;s forming groups, active venues, and scheduled events across Bucharest.
+          Live view of today&apos;s forming groups, active venues, and scheduled events around {city.name}.
         </p>
       </section>
 
       <div className="overflow-hidden rounded-3xl border border-neutral-200 bg-white shadow-sm">
-        <PulseMap events={events} groups={groups} venues={venues} />
+        <PulseMap
+          center={{ lat: city.lat, lng: city.lng }}
+          cityName={city.name}
+          events={events}
+          groups={groups}
+          venues={venues}
+        />
       </div>
     </div>
   );
