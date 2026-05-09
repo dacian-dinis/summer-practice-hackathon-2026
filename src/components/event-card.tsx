@@ -1,4 +1,4 @@
-import { CloudSun, MapPin } from "lucide-react";
+import { CalendarPlus, CloudSun, MapPin } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import {
@@ -11,6 +11,7 @@ import {
 
 type EventCardProps = {
   event: {
+    id: string;
     startsAt: Date;
     weatherSummary: string | null;
   };
@@ -32,6 +33,7 @@ function formatTime(startsAt: Date): string {
 
 export function EventCard({ event, venue }: EventCardProps): JSX.Element {
   const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${venue.lat},${venue.lng}`;
+  const calendarUrl = `/api/events/${event.id}/ics`;
 
   return (
     <Card className="overflow-hidden border-neutral-200 bg-white shadow-sm">
@@ -56,15 +58,24 @@ export function EventCard({ event, venue }: EventCardProps): JSX.Element {
           <div className="text-sm font-medium text-neutral-950">Start time</div>
           <div className="text-sm text-neutral-600">{formatTime(event.startsAt)}</div>
         </div>
-        <a
-          className="inline-flex items-center gap-2 text-sm font-medium text-neutral-950 transition-colors hover:text-emerald-700"
-          href={googleMapsUrl}
-          rel="noreferrer"
-          target="_blank"
-        >
-          <MapPin className="h-4 w-4" />
-          Open in Google Maps
-        </a>
+        <div className="flex flex-wrap items-center gap-4">
+          <a
+            className="inline-flex items-center gap-2 text-sm font-medium text-neutral-950 transition-colors hover:text-emerald-700"
+            href={googleMapsUrl}
+            rel="noreferrer"
+            target="_blank"
+          >
+            <MapPin className="h-4 w-4" />
+            Open in Google Maps
+          </a>
+          <a
+            className="inline-flex items-center gap-2 text-sm font-medium text-neutral-950 transition-colors hover:text-emerald-700"
+            href={calendarUrl}
+          >
+            <CalendarPlus className="h-4 w-4" />
+            Add to calendar
+          </a>
+        </div>
       </CardContent>
     </Card>
   );

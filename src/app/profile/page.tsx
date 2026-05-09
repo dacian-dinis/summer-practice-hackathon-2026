@@ -11,7 +11,7 @@ export default async function ProfilePage(): Promise<JSX.Element> {
   const currentUser = await getCurrentUser();
   const today = todayDate();
 
-  const [profileUser, sports, availabilityToday] = await Promise.all([
+  const [profileUser, sports, availabilityToday, pastEvents] = await Promise.all([
     currentUser
       ? prisma.user.findUnique({
           where: { id: currentUser.id },
@@ -39,6 +39,21 @@ export default async function ProfilePage(): Promise<JSX.Element> {
           },
         })
       : Promise.resolve([]),
+    currentUser
+      ? prisma.event.findMany({
+          where: {
+            startsAt: { lt: new Date(`${today}T00:00:00Z`) },
+            group: { members: { some: { userId: currentUser.id } } },
+          },
+          include: {
+            group: {
+              include: {
+                members: true,
+              },
+            },
+          },
+        })
+      : Promise.resolve([]),
   ]);
 
   if (!profileUser) {
@@ -52,8 +67,45 @@ export default async function ProfilePage(): Promise<JSX.Element> {
     );
   }
 
+  let confirmed = 0;
+  let noshow = 0;
+
+  for (const event of pastEvents) {
+    const member = event.group.members.find((x) => x.userId === profileUser.id);
+
+    if (!member) {
+      continue;
+    }
+
+    if (member.confirmed) {
+      confirmed += 1;
+    } else {
+      noshow += 1;
+    }
+  }
+
+  const score = confirmed * 10 - noshow * 5;
+
   return (
     <div className="space-y-6">
+      <Card className="border-neutral-200 bg-white">
+        <CardContent className="flex flex-col gap-3 p-5 sm:flex-row sm:items-center sm:justify-between">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="text-2xl font-semibold text-neutral-900">
+                &#11088; ShowUp Score: {score}
+              </span>
+              <Badge variant="secondary" className="bg-amber-100 text-amber-800">
+                Reliability
+              </Badge>
+            </div>
+            <div className="text-sm text-neutral-500">
+              &#10003; {confirmed} attended &middot; &#10007; {noshow} no-shows
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       <div className="grid gap-4 md:grid-cols-3">
         <Card className="border-neutral-200 bg-white">
           <CardContent className="flex items-center gap-3 p-5">
