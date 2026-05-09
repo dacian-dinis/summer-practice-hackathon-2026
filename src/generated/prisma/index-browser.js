@@ -156,6 +156,18 @@ exports.Prisma.GroupScalarFieldEnum = {
   date: 'date',
   captainId: 'captainId',
   status: 'status',
+  shareCode: 'shareCode',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.NotificationScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  kind: 'kind',
+  title: 'title',
+  body: 'body',
+  link: 'link',
+  readAt: 'readAt',
   createdAt: 'createdAt'
 };
 
@@ -220,6 +232,7 @@ exports.Prisma.ModelName = {
   UserSport: 'UserSport',
   Availability: 'Availability',
   Group: 'Group',
+  Notification: 'Notification',
   GroupMember: 'GroupMember',
   Message: 'Message',
   Venue: 'Venue',

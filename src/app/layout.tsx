@@ -9,6 +9,7 @@ import { Nav } from "@/components/nav";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { getCurrentUser } from "@/lib/auth";
+import { getDict, getLocale } from "@/lib/i18n";
 
 import "./globals.css";
 
@@ -26,12 +27,22 @@ export default async function RootLayout({ children }: RootLayoutProps): Promise
   const pathname = headerStore.get("x-pathname") ?? "";
   const isAuthPath = pathname === "/login" || pathname === "/register";
   const isOnboardingPath = pathname.startsWith("/onboarding");
+  const isSharePath = pathname.startsWith("/g/");
   const currentUser = await getCurrentUser();
+  const locale = getLocale();
+  const dict = getDict(locale);
+  const navLabels = {
+    home: dict["nav.home"],
+    profile: dict["nav.profile"],
+    groups: dict["nav.groups"],
+    map: dict["nav.map"],
+    logout: dict["nav.logout"],
+  };
   const isMarketingHome = currentUser === null && pathname === "/";
-  const needsOnboarding = currentUser !== null && currentUser.onboardedAt === null && !isOnboardingPath;
+  const needsOnboarding = currentUser !== null && currentUser.onboardedAt === null && !isOnboardingPath && !isSharePath;
   const bodyClassName = "min-h-screen bg-neutral-50 text-neutral-950 dark:bg-neutral-950 dark:text-neutral-50";
 
-  if (currentUser === null && !isAuthPath && pathname !== "/") {
+  if (currentUser === null && !isAuthPath && !isSharePath && pathname !== "/") {
     redirect("/login");
   }
 
@@ -41,6 +52,19 @@ export default async function RootLayout({ children }: RootLayoutProps): Promise
         <body className={bodyClassName}>
           <ThemeProvider>
             <OnboardingRedirect />
+            <Toaster />
+          </ThemeProvider>
+        </body>
+      </html>
+    );
+  }
+
+  if (isSharePath) {
+    return (
+      <html lang="en" suppressHydrationWarning>
+        <body className={bodyClassName}>
+          <ThemeProvider>
+            <main>{children}</main>
             <Toaster />
           </ThemeProvider>
         </body>
@@ -88,6 +112,8 @@ export default async function RootLayout({ children }: RootLayoutProps): Promise
                   }
                 : null
             }
+            labels={navLabels}
+            locale={locale}
           />
           <main className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-10">{children}</main>
           <Toaster />

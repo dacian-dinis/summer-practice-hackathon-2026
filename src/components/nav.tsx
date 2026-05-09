@@ -5,25 +5,37 @@ import { Loader2, LogOut } from "lucide-react";
 import { useState } from "react";
 
 import { Avatar as UserAvatar } from "@/components/avatar";
+import { LocaleToggle } from "@/components/locale-toggle";
 import { LogoMark } from "@/components/logo";
+import { NotificationBell } from "@/components/notification-bell";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 
-const NAV_LINKS = [
-  { href: "/", label: "Home" },
-  { href: "/profile", label: "Profile" },
-  { href: "/groups", label: "Groups" },
-  { href: "/map", label: "Map" },
-] as const;
+type NavLabels = {
+  home: string;
+  profile: string;
+  groups: string;
+  map: string;
+  logout: string;
+};
 
 type NavProps = {
   currentUser: {
     name: string;
     photoUrl: string | null;
   } | null;
+  locale: "en" | "ro";
+  labels: NavLabels;
 };
 
-export function Nav({ currentUser }: NavProps): JSX.Element {
+export function Nav({ currentUser, locale, labels }: NavProps): JSX.Element {
+  const NAV_LINKS = [
+    { href: "/", label: labels.home },
+    { href: "/profile", label: labels.profile },
+    { href: "/groups", label: labels.groups },
+    { href: "/map", label: labels.map },
+  ];
+
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   async function handleLogout(): Promise<void> {
@@ -60,6 +72,8 @@ export function Nav({ currentUser }: NavProps): JSX.Element {
         </div>
 
         <div className="flex w-full flex-wrap items-center justify-between gap-3 sm:w-auto sm:justify-end">
+          {currentUser ? <NotificationBell /> : null}
+          <LocaleToggle locale={locale} />
           <ThemeToggle />
           {currentUser ? (
             <div className="flex items-center gap-3">
@@ -83,7 +97,7 @@ export function Nav({ currentUser }: NavProps): JSX.Element {
                 variant="outline"
               >
                 {isLoggingOut ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <LogOut className="mr-2 h-4 w-4" />}
-                Logout
+                {labels.logout}
               </Button>
             </div>
           ) : null}

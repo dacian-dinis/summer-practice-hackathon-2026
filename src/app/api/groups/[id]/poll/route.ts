@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 
 import { getCurrentUser } from "@/lib/auth";
 import { groupPollBodySchema, serializePendingPoll } from "@/lib/event-poll";
+import { notify } from "@/lib/notifications";
 import { prisma } from "@/lib/prisma";
 import { todayDate } from "@/lib/today";
 
@@ -45,6 +46,9 @@ export async function POST(
     select: {
       id: true,
       captainId: true,
+      members: {
+        select: { userId: true },
+      },
       event: {
         select: {
           id: true,
@@ -121,6 +125,18 @@ export async function POST(
 
     return createdEvent;
   });
+
+  await notify(
+    group.members
+      .filter((member) => member.userId !== currentUser.id)
+      .map((member) => ({
+        userId: member.userId,
+        kind: "POLL_POSTED" as const,
+        title: "Vote on the venue",
+        body: `Captain posted 3 venue picks for ${parsedBody.data.suggestedTime}. Cast your vote.`,
+        link: `/groups/${params.id}`,
+      })),
+  );
 
   revalidatePath("/groups");
   revalidatePath(`/groups/${params.id}`);

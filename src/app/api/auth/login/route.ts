@@ -7,6 +7,12 @@ import { prisma } from "@/lib/prisma";
 
 const INVALID_CREDENTIALS_MESSAGE = "Invalid email or password";
 
+function safeNext(value: string | null): string {
+  if (!value) return "/";
+  if (!value.startsWith("/") || value.startsWith("//")) return "/";
+  return value;
+}
+
 export async function POST(request: Request): Promise<Response> {
   const body: unknown = await request.json().catch(() => null);
   const parsed = loginInputSchema.safeParse(body);
@@ -14,6 +20,8 @@ export async function POST(request: Request): Promise<Response> {
   if (!parsed.success) {
     return NextResponse.json({ message: "Invalid login data" }, { status: 400 });
   }
+
+  const next = safeNext(new URL(request.url).searchParams.get("next"));
 
   const email = parsed.data.email.trim().toLowerCase();
   const user = await prisma.user.findUnique({
@@ -38,6 +46,6 @@ export async function POST(request: Request): Promise<Response> {
 
   return NextResponse.json({
     ok: true,
-    redirect: "/",
+    redirect: next,
   });
 }

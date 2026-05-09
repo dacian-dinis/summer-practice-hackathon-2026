@@ -24,6 +24,7 @@ model User {
   groupMembers    GroupMember[]
   messages        Message[]
   votes           Vote[]
+  notifications   Notification[]
 }
 
 model Sport {
@@ -65,12 +66,27 @@ model Group {
   date      String
   captainId String
   status    String        @default("FORMING")
+  shareCode String?       @unique
   createdAt DateTime      @default(now())
   sport     Sport         @relation(fields: [sportId], references: [id])
   captain   User          @relation("captain", fields: [captainId], references: [id])
   members   GroupMember[]
   messages  Message[]
   event     Event?
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  kind      String
+  title     String
+  body      String
+  link      String?
+  readAt    DateTime?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
 }
 
 model GroupMember {

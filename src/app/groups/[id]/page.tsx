@@ -8,6 +8,8 @@ import { ConfirmGroupButton } from "@/components/confirm-group-button";
 import { EventCard } from "@/components/event-card";
 import { GroupChat } from "@/components/group-chat";
 import { PollVote } from "@/components/poll-vote";
+import { ShareGroupButton } from "@/components/share-group-button";
+import { TeamBalance } from "@/components/team-balance";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -138,7 +140,14 @@ export default async function GroupDetailPage({
       },
       members: {
         include: {
-          user: true,
+          user: {
+            select: {
+              id: true,
+              name: true,
+              photoUrl: true,
+              skill: true,
+            },
+          },
         },
         orderBy: {
           user: {
@@ -243,10 +252,13 @@ export default async function GroupDetailPage({
                 ) : null}
               </div>
             </div>
-            <ConfirmGroupButton
-              confirmed={membership.confirmed}
-              groupId={group.id}
-            />
+            <div className="flex flex-col items-end gap-3">
+              <ConfirmGroupButton
+                confirmed={membership.confirmed}
+                groupId={group.id}
+              />
+              <ShareGroupButton groupId={group.id} />
+            </div>
           </div>
         </div>
       </Card>
@@ -263,6 +275,20 @@ export default async function GroupDetailPage({
 
       {group.event && (!pendingPoll || pollCandidates.length !== 3) ? (
         <EventCard event={group.event} venue={group.event.venue} />
+      ) : null}
+
+      {group.event && (!pendingPoll || pollCandidates.length !== 3) ? (
+        <TeamBalance
+          members={group.members
+            .filter((member) => member.confirmed)
+            .map((member) => ({
+              id: member.user.id,
+              name: member.user.name,
+              photoUrl: member.user.photoUrl,
+              skill: member.user.skill,
+            }))}
+          sportName={group.sport.name}
+        />
       ) : null}
 
       <Card className="border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900">

@@ -2,6 +2,7 @@ import type { Group, User } from "@/generated/prisma";
 import { z } from "zod";
 
 import { getCurrentUser } from "@/lib/auth";
+import { notify } from "@/lib/notifications";
 import { prisma } from "@/lib/prisma";
 import { todayDate } from "@/lib/today";
 
@@ -229,6 +230,18 @@ export async function POST(request: Request): Promise<Response> {
 
         if (createdGroup) {
           created.push(createdGroup);
+          await notify(
+            pendingGroup.users.map((user) => ({
+              userId: user.id,
+              kind: "GROUP_MATCHED" as const,
+              title: `Matched for ${sport.name}`,
+              body:
+                user.id === pendingGroup.captain.id
+                  ? `You're captain of a ${pendingGroup.users.length}-person ${sport.name} group today.`
+                  : `${pendingGroup.captain.name} is captain. ${pendingGroup.users.length - 1} teammates joining you today.`,
+              link: `/groups/${createdGroup.id}`,
+            })),
+          );
         } else {
           break;
         }

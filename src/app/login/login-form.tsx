@@ -24,7 +24,11 @@ const DEMO_ACCOUNTS = [
   "ioana@showup2move.dev",
 ] as const;
 
-export function LoginForm(): JSX.Element {
+type LoginFormProps = {
+  next?: string;
+};
+
+export function LoginForm({ next }: LoginFormProps = {}): JSX.Element {
   const { toast } = useToast();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -48,7 +52,8 @@ export function LoginForm(): JSX.Element {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch("/api/auth/login", {
+      const url = next ? `/api/auth/login?next=${encodeURIComponent(next)}` : "/api/auth/login";
+      const response = await fetch(url, {
         method: "POST",
         credentials: "same-origin",
         headers: {

@@ -38,8 +38,11 @@ export async function POST(request: Request): Promise<Response> {
 
   setSessionCookie(user.id);
 
+  const nextRaw = new URL(request.url).searchParams.get("next");
+  const next = nextRaw && nextRaw.startsWith("/") && !nextRaw.startsWith("//") ? nextRaw : null;
+
   return NextResponse.json({
     ok: true,
-    redirect: "/onboarding/profile",
+    redirect: `/onboarding/profile${next ? `?next=${encodeURIComponent(next)}` : ""}`,
   });
 }

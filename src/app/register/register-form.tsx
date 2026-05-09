@@ -17,7 +17,11 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import { registerInputSchema } from "@/lib/auth-inputs";
 
-export function RegisterForm(): JSX.Element {
+type RegisterFormProps = {
+  next?: string;
+};
+
+export function RegisterForm({ next }: RegisterFormProps = {}): JSX.Element {
   const { toast } = useToast();
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
@@ -46,7 +50,8 @@ export function RegisterForm(): JSX.Element {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch("/api/auth/register", {
+      const url = next ? `/api/auth/register?next=${encodeURIComponent(next)}` : "/api/auth/register";
+      const response = await fetch(url, {
         method: "POST",
         credentials: "same-origin",
         headers: {

@@ -12,6 +12,7 @@ import {
 
 import { LogoMark } from "@/components/logo";
 import { Button } from "@/components/ui/button";
+import { getDict } from "@/lib/i18n";
 
 const FEATURE_CARDS = [
   {
@@ -59,6 +60,7 @@ const STACK_BADGES = [
 ] as const;
 
 export function Landing(): JSX.Element {
+  const t = getDict();
   return (
     <>
       {/* HERO — cream block */}
@@ -69,12 +71,12 @@ export function Landing(): JSX.Element {
               SOCIAL · SPORT · SPONTANEOUS
             </div>
             <h1 className="font-display text-brand-ink dark:text-neutral-50 text-5xl leading-[0.95] sm:text-6xl md:text-7xl lg:text-8xl">
-              Pickup sports,
+              {t["land.heroTop"]}
               <br />
-              <span className="text-brand">without</span> the chaos.
+              <span className="text-brand">{t["land.heroBottomA"]}</span> {t["land.heroBottomB"]}
             </h1>
             <p className="mt-8 max-w-xl text-lg leading-8 text-brand-ink/80 dark:text-neutral-300 sm:text-xl">
-              ShowUp Today. Get matched. Captain a game in one tap. AI handles the venue, the weather, and the message.
+              {t["land.subhead"]}
             </p>
             <div className="mt-10 flex flex-col gap-3 sm:flex-row">
               <Link href="/register">
@@ -83,7 +85,7 @@ export function Landing(): JSX.Element {
                   size="lg"
                   type="button"
                 >
-                  Get started — it&apos;s free
+                  {t["land.signUp"]}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
@@ -94,7 +96,7 @@ export function Landing(): JSX.Element {
                   type="button"
                   variant="outline"
                 >
-                  I have an account
+                  {t["land.login"]}
                 </Button>
               </Link>
             </div>

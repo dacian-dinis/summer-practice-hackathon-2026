@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 
 import { getCurrentUser } from "@/lib/auth";
 import { eventVoteBodySchema, parsePendingPoll, pickWinningVenueId } from "@/lib/event-poll";
+import { notify } from "@/lib/notifications";
 import { prisma } from "@/lib/prisma";
 
 type RouteContext = {
@@ -147,6 +148,16 @@ export async function POST(
       weatherSummary: null,
     },
   });
+
+  await notify(
+    event.group.members.map((member) => ({
+      userId: member.userId,
+      kind: "EVENT_CREATED" as const,
+      title: "Event locked in",
+      body: `${winnerVenue.name} won the vote. Calendar invite is ready on the group page.`,
+      link: `/groups/${event.groupId}`,
+    })),
+  );
 
   revalidatePath("/groups");
   revalidatePath(`/groups/${event.groupId}`);
