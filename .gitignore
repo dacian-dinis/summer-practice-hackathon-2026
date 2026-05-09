@@ -4,3 +4,9 @@ out/
 dist/
 .npm-cache/
 *.log
+tsconfig.tsbuildinfo
+
+# secrets — never commit
+.env
+.env.local
+.env.*.local
