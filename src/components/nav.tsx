@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRef } from "react";
 
 import { switchUserAction } from "@/app/actions";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { USER_NAMES, isUserName } from "@/lib/users";
 
 const NAV_LINKS = [
@@ -22,7 +23,7 @@ export function Nav({ currentUserName }: NavProps): JSX.Element {
   const hasCurrentUserOption = isUserName(currentUserName);
 
   return (
-    <header className="border-b bg-white/90 backdrop-blur">
+    <header className="border-b bg-white/90 backdrop-blur dark:border-neutral-800 dark:bg-neutral-900/90">
       <div className="mx-auto flex max-w-5xl flex-col gap-4 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
         <nav className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm font-medium">
           {NAV_LINKS.map((link) => (
@@ -35,6 +36,8 @@ export function Nav({ currentUserName }: NavProps): JSX.Element {
             </Link>
           ))}
         </nav>
+
+        <ThemeToggle />
 
         <form action={switchUserAction} ref={formRef} className="flex w-full flex-wrap items-center gap-3 sm:w-auto sm:flex-nowrap">
           <label htmlFor="userId" className="whitespace-nowrap text-sm font-medium">

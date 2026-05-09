@@ -170,19 +170,19 @@ export function CaptainCopilot({
       </Button>
 
       {error ? (
-        <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+        <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 dark:border-rose-900 dark:bg-rose-950/60 dark:text-rose-200">
           {error}
         </div>
       ) : null}
 
       {suggestion ? (
-        <Card className="border-neutral-200 bg-white shadow-sm">
+        <Card className="border-neutral-200 bg-white shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
           <CardHeader className="space-y-4">
             <div className="flex flex-wrap items-center gap-2">
-              <Badge className="bg-amber-100 text-amber-900" variant="secondary">
+              <Badge className="bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-300" variant="secondary">
                 {suggestion.weatherNote}
               </Badge>
-              <Badge className="bg-sky-100 text-sky-800" variant="secondary">
+              <Badge className="bg-sky-100 text-sky-800 dark:bg-sky-950 dark:text-sky-300" variant="secondary">
                 Suggested time {suggestion.suggestedTime}
               </Badge>
             </div>
@@ -195,23 +195,23 @@ export function CaptainCopilot({
             <div className="grid gap-4 lg:grid-cols-3">
               {suggestion.ranked.map((venue, index) => (
                 <div
-                  className="rounded-2xl border border-neutral-200 bg-neutral-50 p-4"
+                  className="rounded-2xl border border-neutral-200 bg-neutral-50 p-4 dark:border-neutral-800 dark:bg-neutral-950"
                   key={venue.venueId}
                 >
                   <div className="mb-3 flex items-start justify-between gap-3">
                     <div>
-                      <div className="text-sm font-medium text-neutral-500">Option {index + 1}</div>
-                      <div className="text-lg font-semibold text-neutral-950">{venue.name}</div>
+                      <div className="text-sm font-medium text-neutral-500 dark:text-neutral-400">Option {index + 1}</div>
+                      <div className="text-lg font-semibold text-neutral-950 dark:text-neutral-50">{venue.name}</div>
                     </div>
-                    <Badge className="bg-emerald-100 text-emerald-800" variant="secondary">
+                    <Badge className="bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300" variant="secondary">
                       {venue.pricePerHour} RON
                     </Badge>
                   </div>
-                  <div className="mb-3 flex items-start gap-2 text-sm text-neutral-600">
+                  <div className="mb-3 flex items-start gap-2 text-sm text-neutral-600 dark:text-neutral-400">
                     <MapPin className="mt-0.5 h-4 w-4 shrink-0" />
                     <span>{venue.address}</span>
                   </div>
-                  <p className="text-sm leading-6 text-neutral-700">{venue.reasoning}</p>
+                  <p className="text-sm leading-6 text-neutral-700 dark:text-neutral-300">{venue.reasoning}</p>
                 </div>
               ))}
             </div>

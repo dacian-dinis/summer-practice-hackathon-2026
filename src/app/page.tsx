@@ -81,9 +81,9 @@ export default async function HomePage(): Promise<JSX.Element> {
 
   if (user.userSports.length === 0) {
     return (
-      <Card className="border-dashed border-neutral-300 bg-white">
+      <Card className="border-dashed border-neutral-300 bg-white dark:border-neutral-700 dark:bg-neutral-900">
         <CardHeader>
-          <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-neutral-100 text-neutral-700">
+          <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300">
             <CircleOff className="h-5 w-5" />
           </div>
           <CardTitle>Set sports in profile to start</CardTitle>
@@ -128,11 +128,11 @@ export default async function HomePage(): Promise<JSX.Element> {
   return (
     <div className="space-y-8">
       <section className="space-y-2">
-        <h1 className="text-3xl font-semibold tracking-tight text-neutral-950 sm:text-4xl">ShowUp2Move</h1>
-        <p className="text-sm text-neutral-600">Pickup sports without the chaos near {city.name}.</p>
+        <h1 className="text-3xl font-semibold tracking-tight text-neutral-950 dark:text-neutral-50 sm:text-4xl">ShowUp2Move</h1>
+        <p className="text-sm text-neutral-600 dark:text-neutral-400">Pickup sports without the chaos near {city.name}.</p>
       </section>
 
-      <section className="overflow-hidden rounded-3xl border border-neutral-200 bg-[linear-gradient(135deg,#f5f7fb_0%,#ffffff_42%,#dcfce7_100%)] p-8 shadow-sm">
+      <section className="overflow-hidden rounded-3xl border border-neutral-200 bg-[linear-gradient(135deg,#f5f7fb_0%,#ffffff_42%,#dcfce7_100%)] p-8 shadow-sm dark:border-neutral-800 dark:bg-[linear-gradient(135deg,#111827_0%,#0a0a0a_44%,#052e16_100%)]">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="space-y-4">
             <Badge className="w-fit" variant="secondary">
@@ -140,10 +140,10 @@ export default async function HomePage(): Promise<JSX.Element> {
               ShowUpToday
             </Badge>
             <div className="space-y-2">
-              <h1 className="text-4xl font-semibold tracking-tight text-neutral-950">
+              <h1 className="text-4xl font-semibold tracking-tight text-neutral-950 dark:text-neutral-50">
                 What are you up for today, {user.name}?
               </h1>
-              <p className="max-w-2xl text-sm leading-6 text-neutral-600">
+              <p className="max-w-2xl text-sm leading-6 text-neutral-600 dark:text-neutral-400">
                 Mark each sport once and the matching flow can use your real availability instead of guessing.
               </p>
               <Link href="/events/new">
@@ -153,13 +153,13 @@ export default async function HomePage(): Promise<JSX.Element> {
               </Link>
             </div>
           </div>
-          <Card className="min-w-[280px] border-neutral-200 bg-white/80 backdrop-blur">
+          <Card className="min-w-[280px] border-neutral-200 bg-white/80 backdrop-blur dark:border-neutral-800 dark:bg-neutral-900/80">
             <CardContent className="p-5">
-              <div className="mb-2 flex items-center gap-2 text-sm font-medium text-neutral-700">
+              <div className="mb-2 flex items-center gap-2 text-sm font-medium text-neutral-700 dark:text-neutral-200">
                 <Users className="h-4 w-4" />
                 You&apos;re in for today
               </div>
-              <div className="text-sm text-neutral-600">
+              <div className="text-sm text-neutral-600 dark:text-neutral-400">
                 {yesSports.length > 0
                   ? yesSports
                       .map((item) => `${SPORT_EMOJI[item.sport.name] ?? "🏅"} ${item.sport.name}`)
@@ -172,15 +172,15 @@ export default async function HomePage(): Promise<JSX.Element> {
       </section>
 
       {availabilityToday.length === 0 ? (
-        <Card className="border-dashed border-neutral-300 bg-white">
+        <Card className="border-dashed border-neutral-300 bg-white dark:border-neutral-700 dark:bg-neutral-900">
           <CardContent className="flex flex-col gap-3 p-5 sm:flex-row sm:items-center sm:justify-between">
             <div className="space-y-1">
-              <div className="font-medium text-neutral-950">Mark Yes for any sport to find a group</div>
-              <div className="text-sm text-neutral-600">
+              <div className="font-medium text-neutral-950 dark:text-neutral-50">Mark Yes for any sport to find a group</div>
+              <div className="text-sm text-neutral-600 dark:text-neutral-400">
                 Your sports are set. Add today&apos;s availability so matching has something to work with.
               </div>
             </div>
-            <Users className="h-5 w-5 text-neutral-400" />
+            <Users className="h-5 w-5 text-neutral-400 dark:text-neutral-500" />
           </CardContent>
         </Card>
       ) : null}
@@ -191,7 +191,7 @@ export default async function HomePage(): Promise<JSX.Element> {
 
           return (
             <Card
-              className="border-neutral-200 bg-white shadow-sm transition-transform hover:-translate-y-1"
+              className="border-neutral-200 bg-white shadow-sm transition-transform hover:-translate-y-1 dark:border-neutral-800 dark:bg-neutral-900"
               key={item.sportId}
             >
               <CardHeader className="space-y-4">
@@ -205,10 +205,10 @@ export default async function HomePage(): Promise<JSX.Element> {
                   <Badge
                     className={
                       currentStatus === "YES"
-                        ? "bg-emerald-100 text-emerald-800"
+                        ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300"
                         : currentStatus === "NO"
-                          ? "bg-rose-100 text-rose-800"
-                          : "bg-neutral-100 text-neutral-700"
+                          ? "bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300"
+                          : "bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300"
                     }
                     variant="secondary"
                   >

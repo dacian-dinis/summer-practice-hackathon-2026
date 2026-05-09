@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 
 import { OnboardingRedirect } from "@/app/onboarding/onboarding-client";
 import { Nav } from "@/components/nav";
+import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { getCurrentUser } from "@/lib/auth";
 import { USER_NAMES } from "@/lib/users";
@@ -25,13 +26,16 @@ export default async function RootLayout({ children }: RootLayoutProps): Promise
   const isOnboardingPath = pathname.startsWith("/onboarding");
   const currentUser = await getCurrentUser();
   const needsOnboarding = currentUser !== null && currentUser.onboardedAt === null && !isOnboardingPath;
+  const bodyClassName = "min-h-screen bg-neutral-50 text-neutral-950 dark:bg-neutral-950 dark:text-neutral-50";
 
   if (needsOnboarding) {
     return (
-      <html lang="en">
-        <body className="min-h-screen bg-neutral-50 text-neutral-950">
-          <OnboardingRedirect />
-          <Toaster />
+      <html lang="en" suppressHydrationWarning>
+        <body className={bodyClassName}>
+          <ThemeProvider>
+            <OnboardingRedirect />
+            <Toaster />
+          </ThemeProvider>
         </body>
       </html>
     );
@@ -39,21 +43,25 @@ export default async function RootLayout({ children }: RootLayoutProps): Promise
 
   if (isOnboardingPath) {
     return (
-      <html lang="en">
-        <body className="min-h-screen bg-neutral-50 text-neutral-950">
-          {children}
-          <Toaster />
+      <html lang="en" suppressHydrationWarning>
+        <body className={bodyClassName}>
+          <ThemeProvider>
+            {children}
+            <Toaster />
+          </ThemeProvider>
         </body>
       </html>
     );
   }
 
   return (
-    <html lang="en">
-      <body className="min-h-screen bg-neutral-50 text-neutral-950">
-        <Nav currentUserName={currentUser?.name ?? USER_NAMES[0]} />
-        <main className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-10">{children}</main>
-        <Toaster />
+    <html lang="en" suppressHydrationWarning>
+      <body className={bodyClassName}>
+        <ThemeProvider>
+          <Nav currentUserName={currentUser?.name ?? USER_NAMES[0]} />
+          <main className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-10">{children}</main>
+          <Toaster />
+        </ThemeProvider>
       </body>
     </html>
   );

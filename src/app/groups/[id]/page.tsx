@@ -30,14 +30,14 @@ const SPORT_EMOJI: Record<string, string> = {
 
 function getStatusClasses(status: string): string {
   if (status === "CONFIRMED") {
-    return "bg-emerald-100 text-emerald-800";
+    return "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300";
   }
 
   if (status === "DONE") {
-    return "bg-slate-200 text-slate-800";
+    return "bg-slate-200 text-slate-800 dark:bg-slate-800 dark:text-slate-200";
   }
 
-  return "bg-amber-100 text-amber-900";
+  return "bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-300";
 }
 
 function formatGroupDate(date: string): string {
@@ -217,7 +217,7 @@ export default async function GroupDetailPage({
 
   return (
     <div className="space-y-6">
-      <Card className="overflow-hidden border-neutral-200 bg-white shadow-sm">
+      <Card className="overflow-hidden border-neutral-200 bg-white shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
         <div className="bg-[linear-gradient(135deg,#0f172a_0%,#1e293b_46%,#14532d_100%)] p-6 text-white">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div className="space-y-3">
@@ -265,7 +265,7 @@ export default async function GroupDetailPage({
         <EventCard event={group.event} venue={group.event.venue} />
       ) : null}
 
-      <Card className="border-neutral-200 bg-white">
+      <Card className="border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900">
         <CardHeader>
           <CardTitle className="text-xl">Members</CardTitle>
           <CardDescription>Who&apos;s in and who has confirmed.</CardDescription>
@@ -273,22 +273,22 @@ export default async function GroupDetailPage({
         <CardContent className="space-y-3">
           {group.members.map((member) => (
             <div
-              className="flex items-center justify-between gap-4 rounded-xl border border-neutral-200 px-4 py-3"
+              className="flex items-center justify-between gap-4 rounded-xl border border-neutral-200 px-4 py-3 dark:border-neutral-800 dark:bg-neutral-950"
               key={member.userId}
             >
               <div className="flex items-center gap-3">
                 <Avatar
                   className="h-11 w-11"
-                  fallbackClassName="bg-neutral-200 font-semibold text-neutral-700"
+                  fallbackClassName="bg-neutral-200 font-semibold text-neutral-700 dark:bg-neutral-700 dark:text-neutral-100"
                   name={member.user.name}
                   src={member.user.photoUrl}
                 />
                 <div>
-                  <div className="font-medium text-neutral-950">
+                  <div className="font-medium text-neutral-950 dark:text-neutral-50">
                     {member.user.name}
                     {member.userId === group.captainId ? " ⭐" : ""}
                   </div>
-                  <div className="text-sm text-neutral-500">
+                  <div className="text-sm text-neutral-500 dark:text-neutral-400">
                     {member.confirmed ? "Confirmed" : "Waiting for confirmation"}
                   </div>
                 </div>
@@ -296,7 +296,7 @@ export default async function GroupDetailPage({
               {member.confirmed ? (
                 <CheckCircle2 className="h-5 w-5 text-emerald-600" />
               ) : (
-                <div className="h-5 w-5 rounded-full border border-neutral-300" />
+                <div className="h-5 w-5 rounded-full border border-neutral-300 dark:border-neutral-700" />
               )}
             </div>
           ))}

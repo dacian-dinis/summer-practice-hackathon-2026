@@ -329,7 +329,7 @@ export default function PulseMap({
   );
 
   return (
-    <div className="pulse-map-shell relative h-[60vh] min-h-[420px] w-full overflow-hidden rounded-[1.75rem] border border-white/10 bg-[#020617] md:h-[75vh]">
+    <div className="pulse-map-shell relative h-[60vh] min-h-[420px] w-full overflow-hidden rounded-[1.75rem] border border-neutral-200 bg-slate-950 dark:border-white/10 dark:bg-[#020617] md:h-[75vh]">
       <style jsx global>{`
         @keyframes pulse-green {
           0% {

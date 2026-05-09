@@ -66,7 +66,7 @@ function Notice({ message }: { message: string | null }): JSX.Element | null {
   }
 
   return (
-    <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900">
+    <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900 dark:border-amber-900 dark:bg-amber-950/60 dark:text-amber-200">
       {message}
     </div>
   );
@@ -497,7 +497,7 @@ export function ProfileForm({
 
   return (
     <div className="space-y-6">
-      <Card className="overflow-hidden border-neutral-200 bg-white shadow-lg shadow-neutral-200/70">
+      <Card className="overflow-hidden border-neutral-200 bg-white shadow-lg shadow-neutral-200/70 dark:border-neutral-800 dark:bg-neutral-900 dark:shadow-black/30">
         <div className="bg-[radial-gradient(circle_at_top_left,_rgba(16,185,129,0.16),_transparent_30%),linear-gradient(135deg,#111827,#1f2937)] p-6 text-white">
           <div className="flex items-start justify-between gap-4">
             <div className="space-y-2">
@@ -520,25 +520,25 @@ export function ProfileForm({
         <CardContent className="space-y-6 p-6">
           <Notice message={notice} />
           <canvas className="hidden" ref={canvasRef} />
-          <div className="space-y-4 rounded-2xl border border-neutral-200 bg-neutral-50 p-4">
+          <div className="space-y-4 rounded-2xl border border-neutral-200 bg-neutral-50 p-4 dark:border-neutral-800 dark:bg-neutral-950">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
               <Avatar
-                className="h-24 w-24 border border-neutral-200"
-                fallbackClassName="bg-neutral-200 text-2xl font-semibold text-neutral-700"
+                className="h-24 w-24 border border-neutral-200 dark:border-neutral-700"
+                fallbackClassName="bg-neutral-200 text-2xl font-semibold text-neutral-700 dark:bg-neutral-700 dark:text-neutral-100"
                 name={name.trim() || initialName}
                 src={photoUrl}
               />
               <div className="space-y-3">
                 <div>
-                  <div className="text-sm font-medium text-neutral-900">Profile photo</div>
-                  <div className="text-sm text-neutral-500">
+                  <div className="text-sm font-medium text-neutral-900 dark:text-neutral-100">Profile photo</div>
+                  <div className="text-sm text-neutral-500 dark:text-neutral-400">
                     JPG output, max 512x512, kept under roughly 500 KB before save.
                   </div>
                 </div>
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                   <input
                     accept="image/*"
-                    className="block text-sm text-neutral-600 file:mr-4 file:rounded-full file:border-0 file:bg-neutral-900 file:px-4 file:py-2 file:text-sm file:font-medium file:text-white"
+                    className="block text-sm text-neutral-600 file:mr-4 file:rounded-full file:border-0 file:bg-neutral-900 file:px-4 file:py-2 file:text-sm file:font-medium file:text-white dark:text-neutral-400 dark:file:bg-neutral-100 dark:file:text-neutral-950"
                     disabled={isProcessingPhoto}
                     onChange={(event) => void handlePhotoChange(event)}
                     type="file"
@@ -565,7 +565,7 @@ export function ProfileForm({
           <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
             <div className="space-y-6">
               <div className="space-y-2">
-                <label className="text-sm font-medium text-neutral-800" htmlFor="profile-name">
+                <label className="text-sm font-medium text-neutral-800 dark:text-neutral-200" htmlFor="profile-name">
                   Name
                 </label>
                 <Input
@@ -578,7 +578,7 @@ export function ProfileForm({
 
               <div className="space-y-3">
                 <div className="flex items-center justify-between gap-3">
-                  <label className="text-sm font-medium text-neutral-800" htmlFor="profile-bio">
+                  <label className="text-sm font-medium text-neutral-800 dark:text-neutral-200" htmlFor="profile-bio">
                     Bio
                   </label>
                   <Button
@@ -607,13 +607,13 @@ export function ProfileForm({
               </div>
             </div>
 
-            <Card className="border-neutral-200 bg-neutral-50">
+            <Card className="border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-950">
               <CardHeader className="pb-4">
                 <CardTitle className="text-lg">Skill Level</CardTitle>
                 <CardDescription>Use a simple 1 to 5 scale for how competitive you are.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex items-center justify-between text-sm text-neutral-600">
+                <div className="flex items-center justify-between text-sm text-neutral-600 dark:text-neutral-400">
                   <span>Beginner</span>
                   <span className="rounded-full bg-neutral-900 px-3 py-1 text-xs font-semibold text-white">
                     Level {skill}
@@ -621,14 +621,14 @@ export function ProfileForm({
                   <span>Advanced</span>
                 </div>
                 <input
-                  className="h-2 w-full cursor-pointer appearance-none rounded-full bg-neutral-200 accent-neutral-900"
+                  className="h-2 w-full cursor-pointer appearance-none rounded-full bg-neutral-200 accent-neutral-900 dark:bg-neutral-800"
                   max={5}
                   min={1}
                   onChange={(event) => setSkill(Number(event.target.value))}
                   type="range"
                   value={skill}
                 />
-                <div className="flex justify-between text-xs text-neutral-500">
+                <div className="flex justify-between text-xs text-neutral-500 dark:text-neutral-400">
                   {[1, 2, 3, 4, 5].map((level) => (
                     <span key={level}>{level}</span>
                   ))}
@@ -639,8 +639,8 @@ export function ProfileForm({
 
           <div className="space-y-3">
             <div className="flex items-center gap-2">
-              <Target className="h-4 w-4 text-neutral-600" />
-              <h2 className="text-sm font-medium text-neutral-800">Sports</h2>
+              <Target className="h-4 w-4 text-neutral-600 dark:text-neutral-400" />
+              <h2 className="text-sm font-medium text-neutral-800 dark:text-neutral-200">Sports</h2>
             </div>
             <div className="flex flex-wrap gap-3">
               {sports.map((sport) => {
@@ -652,7 +652,7 @@ export function ProfileForm({
                     aria-pressed={selected}
                     className={cn(
                       "min-h-10 rounded-full border px-0 py-0 transition-transform hover:-translate-y-0.5",
-                      selected ? "border-neutral-900" : "border-neutral-200",
+                      selected ? "border-neutral-900 dark:border-neutral-100" : "border-neutral-200 dark:border-neutral-800",
                     )}
                     key={sport.id}
                     onClick={() => toggleSport(sport.id)}
@@ -663,7 +663,7 @@ export function ProfileForm({
                         "gap-2 px-4 py-2 text-sm",
                         selected
                           ? "bg-neutral-900 text-white"
-                          : "bg-white text-neutral-700",
+                          : "bg-white text-neutral-700 dark:bg-neutral-900 dark:text-neutral-300",
                       )}
                       variant="outline"
                     >
@@ -673,8 +673,8 @@ export function ProfileForm({
                           className={cn(
                             "rounded-full px-2 py-0.5 text-[10px] font-bold tracking-wide",
                             status === "YES"
-                              ? "bg-emerald-100 text-emerald-900 border-emerald-300"
-                              : "bg-rose-100 text-rose-900 border-rose-300",
+                              ? "bg-emerald-100 text-emerald-900 border-emerald-300 dark:bg-emerald-950 dark:text-emerald-300"
+                              : "bg-rose-100 text-rose-900 border-rose-300 dark:bg-rose-950 dark:text-rose-300",
                           )}
                         >
                           {status}

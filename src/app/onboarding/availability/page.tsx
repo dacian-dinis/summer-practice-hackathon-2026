@@ -66,11 +66,11 @@ export default async function OnboardingAvailabilityPage(): Promise<JSX.Element>
           }))}
         />
       ) : (
-        <Card className="border-dashed border-neutral-300 bg-neutral-50">
+        <Card className="border-dashed border-neutral-300 bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-950">
           <CardHeader>
             <CardTitle>No sports selected yet</CardTitle>
           </CardHeader>
-          <CardContent className="text-sm text-neutral-600">
+          <CardContent className="text-sm text-neutral-600 dark:text-neutral-400">
             Go back and add at least one sport if you want availability matching to be useful.
           </CardContent>
         </Card>

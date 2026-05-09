@@ -177,15 +177,15 @@ export function GroupChat({
   }
 
   return (
-    <Card className="border-neutral-200 bg-white">
+    <Card className="border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900">
       <CardHeader>
         <CardTitle className="text-xl">Group Chat</CardTitle>
         <CardDescription>Coordinate the plan without leaving the group page.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="max-h-[420px] space-y-3 overflow-y-auto rounded-2xl border border-neutral-200 bg-neutral-50 p-4">
+        <div className="max-h-[420px] space-y-3 overflow-y-auto rounded-2xl border border-neutral-200 bg-neutral-50 p-4 dark:border-neutral-800 dark:bg-neutral-950">
           {orderedMessages.length === 0 ? (
-            <div className="text-sm text-neutral-500">No messages yet. Start the conversation.</div>
+            <div className="text-sm text-neutral-500 dark:text-neutral-400">No messages yet. Start the conversation.</div>
           ) : null}
           {orderedMessages.map((message) => {
             const isCurrentUser = message.userId === currentUserId;
@@ -197,7 +197,7 @@ export function GroupChat({
               >
                 {!isCurrentUser ? (
                   <Avatar className="h-9 w-9">
-                    <AvatarFallback className="bg-neutral-200 text-xs font-semibold text-neutral-700">
+                    <AvatarFallback className="bg-neutral-200 text-xs font-semibold text-neutral-700 dark:bg-neutral-700 dark:text-neutral-100">
                       {getInitials(message.userName)}
                     </AvatarFallback>
                   </Avatar>
@@ -206,14 +206,14 @@ export function GroupChat({
                   className={cn(
                     "max-w-[85%] rounded-2xl px-4 py-3 text-sm shadow-sm",
                     isCurrentUser
-                      ? "bg-neutral-950 text-white"
-                      : "border border-neutral-200 bg-white text-neutral-900",
+                      ? "bg-neutral-950 text-white dark:bg-neutral-100 dark:text-neutral-950"
+                      : "border border-neutral-200 bg-white text-neutral-900 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-100",
                   )}
                 >
                   <div
                     className={cn(
                       "mb-1 flex items-center gap-2 text-xs",
-                      isCurrentUser ? "text-neutral-300" : "text-neutral-500",
+                      isCurrentUser ? "text-neutral-300 dark:text-neutral-600" : "text-neutral-500 dark:text-neutral-400",
                     )}
                   >
                     <span className="font-semibold">

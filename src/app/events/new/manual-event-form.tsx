@@ -165,7 +165,7 @@ export function ManualEventForm({
   }
 
   return (
-    <Card className="border-neutral-200 bg-white shadow-sm">
+    <Card className="border-neutral-200 bg-white shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
       <CardHeader>
         <CardTitle className="text-2xl">Create a manual event</CardTitle>
         <CardDescription>
@@ -176,7 +176,7 @@ export function ManualEventForm({
         <form className="space-y-5" onSubmit={(event) => void handleSubmit(event)}>
           <div className="grid gap-5 md:grid-cols-2">
             <div className="space-y-2">
-              <label className="text-sm font-medium text-neutral-800" htmlFor="manual-sport">
+              <label className="text-sm font-medium text-neutral-800 dark:text-neutral-200" htmlFor="manual-sport">
                 Sport
               </label>
               <Select
@@ -193,7 +193,7 @@ export function ManualEventForm({
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-neutral-800" htmlFor="manual-city">
+              <label className="text-sm font-medium text-neutral-800 dark:text-neutral-200" htmlFor="manual-city">
                 City
               </label>
               <Select
@@ -214,7 +214,7 @@ export function ManualEventForm({
             </div>
 
             <div className="space-y-2 md:col-span-2">
-              <label className="text-sm font-medium text-neutral-800" htmlFor="manual-venue">
+              <label className="text-sm font-medium text-neutral-800 dark:text-neutral-200" htmlFor="manual-venue">
                 Venue
               </label>
               <Select
@@ -236,7 +236,7 @@ export function ManualEventForm({
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-neutral-800" htmlFor="manual-date">
+              <label className="text-sm font-medium text-neutral-800 dark:text-neutral-200" htmlFor="manual-date">
                 Date
               </label>
               <Input
@@ -250,7 +250,7 @@ export function ManualEventForm({
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-neutral-800" htmlFor="manual-time">
+              <label className="text-sm font-medium text-neutral-800 dark:text-neutral-200" htmlFor="manual-time">
                 Time
               </label>
               <Input
@@ -265,7 +265,7 @@ export function ManualEventForm({
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-neutral-800" htmlFor="manual-max-participants">
+              <label className="text-sm font-medium text-neutral-800 dark:text-neutral-200" htmlFor="manual-max-participants">
                 Max participants
               </label>
               <Input
@@ -277,14 +277,14 @@ export function ManualEventForm({
                 value={maxParticipants}
               />
               {selectedSport ? (
-                <p className="text-xs text-neutral-500">
+                <p className="text-xs text-neutral-500 dark:text-neutral-400">
                   Allowed range: {selectedSport.minGroup} to {selectedSport.maxGroup}
                 </p>
               ) : null}
             </div>
 
             <div className="space-y-2 md:col-span-2">
-              <label className="text-sm font-medium text-neutral-800" htmlFor="manual-description">
+              <label className="text-sm font-medium text-neutral-800 dark:text-neutral-200" htmlFor="manual-description">
                 Description
               </label>
               <Textarea
@@ -294,7 +294,7 @@ export function ManualEventForm({
                 placeholder="Optional details for the group."
                 value={description}
               />
-              <p className="text-xs text-neutral-500">{description.length}/200</p>
+              <p className="text-xs text-neutral-500 dark:text-neutral-400">{description.length}/200</p>
             </div>
           </div>
 

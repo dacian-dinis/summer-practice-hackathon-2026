@@ -93,18 +93,18 @@ export default async function ProfilePage(): Promise<JSX.Element> {
 
   return (
     <div className="space-y-6">
-      <Card className="border-neutral-200 bg-white">
+      <Card className="border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900">
         <CardContent className="flex flex-col gap-3 p-5 sm:flex-row sm:items-center sm:justify-between">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <span className="text-2xl font-semibold text-neutral-900">
+              <span className="text-2xl font-semibold text-neutral-900 dark:text-neutral-50">
                 &#11088; ShowUp Score: {score}
               </span>
-              <Badge variant="secondary" className="bg-amber-100 text-amber-800">
+              <Badge variant="secondary" className="bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300">
                 Reliability
               </Badge>
             </div>
-            <div className="text-sm text-neutral-500">
+            <div className="text-sm text-neutral-500 dark:text-neutral-400">
               &#10003; {confirmed} attended &middot; &#10007; {noshow} no-shows
             </div>
           </div>
@@ -112,35 +112,35 @@ export default async function ProfilePage(): Promise<JSX.Element> {
       </Card>
 
       <div className="grid gap-4 md:grid-cols-3">
-        <Card className="border-neutral-200 bg-white">
+        <Card className="border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900">
           <CardContent className="flex items-center gap-3 p-5">
             <div className="rounded-full bg-emerald-100 p-2 text-emerald-700">
               <Swords className="h-4 w-4" />
             </div>
             <div>
-              <div className="text-sm text-neutral-500">Selected sports</div>
+              <div className="text-sm text-neutral-500 dark:text-neutral-400">Selected sports</div>
               <div className="text-2xl font-semibold">{profileUser.userSports.length}</div>
             </div>
           </CardContent>
         </Card>
-        <Card className="border-neutral-200 bg-white">
+        <Card className="border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900">
           <CardContent className="flex items-center gap-3 p-5">
             <div className="rounded-full bg-amber-100 p-2 text-amber-700">
               <Activity className="h-4 w-4" />
             </div>
             <div>
-              <div className="text-sm text-neutral-500">Skill level</div>
+              <div className="text-sm text-neutral-500 dark:text-neutral-400">Skill level</div>
               <div className="text-2xl font-semibold">{profileUser.skill}/5</div>
             </div>
           </CardContent>
         </Card>
-        <Card className="border-neutral-200 bg-white">
+        <Card className="border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900">
           <CardContent className="flex items-center gap-3 p-5">
             <div className="rounded-full bg-rose-100 p-2 text-rose-700">
               <Flame className="h-4 w-4" />
             </div>
             <div>
-              <div className="text-sm text-neutral-500">Today</div>
+              <div className="text-sm text-neutral-500 dark:text-neutral-400">Today</div>
               <div className="mt-1 flex flex-wrap gap-2">
                 {availabilityToday.length > 0 ? (
                   availabilityToday.map((item) => (
@@ -149,7 +149,7 @@ export default async function ProfilePage(): Promise<JSX.Element> {
                     </Badge>
                   ))
                 ) : (
-                  <span className="text-sm text-neutral-500">No status set yet</span>
+                  <span className="text-sm text-neutral-500 dark:text-neutral-400">No status set yet</span>
                 )}
               </div>
             </div>

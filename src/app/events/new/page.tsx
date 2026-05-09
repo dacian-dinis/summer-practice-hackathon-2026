@@ -72,14 +72,14 @@ export default async function NewEventPage(): Promise<JSX.Element> {
 
   return (
     <div className="space-y-8">
-      <section className="overflow-hidden rounded-3xl border border-neutral-200 bg-[linear-gradient(135deg,#fff7ed_0%,#ffffff_45%,#ecfccb_100%)] p-8 shadow-sm">
+      <section className="overflow-hidden rounded-3xl border border-neutral-200 bg-[linear-gradient(135deg,#fff7ed_0%,#ffffff_45%,#ecfccb_100%)] p-8 shadow-sm dark:border-neutral-800 dark:bg-[linear-gradient(135deg,#2a160b_0%,#0a0a0a_45%,#1a2e05_100%)]">
         <div className="space-y-3">
           <Badge className="w-fit" variant="secondary">
             <CalendarPlus className="mr-2 h-3.5 w-3.5" />
             One-off event
           </Badge>
-          <h1 className="text-4xl font-semibold tracking-tight text-neutral-950">Create an event directly</h1>
-          <p className="max-w-2xl text-sm leading-6 text-neutral-600">
+          <h1 className="text-4xl font-semibold tracking-tight text-neutral-950 dark:text-neutral-50">Create an event directly</h1>
+          <p className="max-w-2xl text-sm leading-6 text-neutral-600 dark:text-neutral-400">
             Skip matching when you already know the venue and time. This confirms the group immediately.
           </p>
         </div>

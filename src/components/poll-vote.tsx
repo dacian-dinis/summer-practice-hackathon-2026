@@ -180,12 +180,12 @@ export function PollVote({
 
   if (winnerVenueId) {
     return (
-      <Card className="border-emerald-200 bg-emerald-50 shadow-sm">
-        <CardContent className="flex items-center gap-3 p-6 text-emerald-900">
+      <Card className="border-emerald-200 bg-emerald-50 shadow-sm dark:border-emerald-900 dark:bg-emerald-950/60">
+        <CardContent className="flex items-center gap-3 p-6 text-emerald-900 dark:text-emerald-200">
           <CheckCircle2 className="h-5 w-5" />
           <div>
             <div className="font-semibold">Venue confirmed</div>
-            <div className="text-sm text-emerald-800">
+            <div className="text-sm text-emerald-800 dark:text-emerald-300">
               {candidateById.get(winnerVenueId)?.name ?? "The poll winner"} is now locked in.
             </div>
           </div>
@@ -196,7 +196,7 @@ export function PollVote({
   }
 
   return (
-    <Card className="border-neutral-200 bg-white shadow-sm">
+    <Card className="border-neutral-200 bg-white shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
       <CardHeader>
         <CardTitle className="text-xl">Vote on the venue</CardTitle>
         <CardDescription>
@@ -215,8 +215,8 @@ export function PollVote({
                 className={cn(
                   "h-auto min-h-10 rounded-full border px-4 py-3 text-left",
                   isSelected
-                    ? "border-emerald-300 bg-emerald-50 text-emerald-900 hover:bg-emerald-100"
-                    : "border-neutral-200 bg-white text-neutral-900 hover:bg-neutral-50",
+                    ? "border-emerald-300 bg-emerald-50 text-emerald-900 hover:bg-emerald-100 dark:border-emerald-800 dark:bg-emerald-950 dark:text-emerald-200 dark:hover:bg-emerald-900"
+                    : "border-neutral-200 bg-white text-neutral-900 hover:bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-100 dark:hover:bg-neutral-800",
                 )}
                 disabled={Boolean(isSubmittingVenueId) || isRefreshing}
                 key={candidate.venueId}
@@ -226,7 +226,7 @@ export function PollVote({
               >
                 <div className="flex flex-col items-start">
                   <span className="font-medium">{candidate.name}</span>
-                  <span className="text-xs text-neutral-500">
+                  <span className="text-xs text-neutral-500 dark:text-neutral-400">
                     {count} / {totalMembers} votes
                   </span>
                 </div>
@@ -236,12 +236,12 @@ export function PollVote({
           })}
         </div>
 
-        <div className="text-sm text-neutral-600">
+        <div className="text-sm text-neutral-600 dark:text-neutral-400">
           {totalVotesCast} of {totalMembers} votes submitted
         </div>
 
         {error ? (
-          <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+          <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 dark:border-rose-900 dark:bg-rose-950/60 dark:text-rose-200">
             {error}
           </div>
         ) : null}

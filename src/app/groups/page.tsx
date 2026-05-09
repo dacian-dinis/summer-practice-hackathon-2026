@@ -29,14 +29,14 @@ const SPORT_EMOJI: Record<string, string> = {
 
 function getStatusClasses(status: string): string {
   if (status === "CONFIRMED") {
-    return "bg-emerald-100 text-emerald-800";
+    return "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300";
   }
 
   if (status === "DONE") {
-    return "bg-slate-200 text-slate-800";
+    return "bg-slate-200 text-slate-800 dark:bg-slate-800 dark:text-slate-200";
   }
 
-  return "bg-amber-100 text-amber-900";
+  return "bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-300";
 }
 
 function formatGroupDate(date: string): string {
@@ -72,7 +72,7 @@ type GroupCardData = {
 function GroupCard({ group }: { group: GroupCardData }): JSX.Element {
   return (
     <Link className="block" href={`/groups/${group.id}`}>
-      <Card className="h-full border-neutral-200 bg-white transition-transform hover:-translate-y-1 hover:shadow-md">
+      <Card className="h-full border-neutral-200 bg-white transition-transform hover:-translate-y-1 hover:shadow-md dark:border-neutral-800 dark:bg-neutral-900">
         <CardHeader className="space-y-4">
           <div className="flex items-start justify-between gap-4">
             <div className="space-y-2">
@@ -91,8 +91,8 @@ function GroupCard({ group }: { group: GroupCardData }): JSX.Element {
             <div className="flex -space-x-3">
               {group.members.slice(0, 5).map((member) => (
                 <Avatar
-                  className="h-10 w-10 border-2 border-white"
-                  fallbackClassName="bg-neutral-200 text-xs font-semibold text-neutral-700"
+                  className="h-10 w-10 border-2 border-white dark:border-neutral-900"
+                  fallbackClassName="bg-neutral-200 text-xs font-semibold text-neutral-700 dark:bg-neutral-700 dark:text-neutral-100"
                   key={member.user.id}
                   name={member.user.name}
                   src={member.user.photoUrl}
@@ -100,13 +100,13 @@ function GroupCard({ group }: { group: GroupCardData }): JSX.Element {
               ))}
             </div>
             {group.members.length > 5 ? (
-              <Badge className="bg-neutral-100 text-neutral-700" variant="secondary">
+              <Badge className="bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300" variant="secondary">
                 +{group.members.length - 5}
               </Badge>
             ) : null}
           </div>
 
-          <div className="flex items-center justify-between gap-3 text-sm text-neutral-600">
+          <div className="flex items-center justify-between gap-3 text-sm text-neutral-600 dark:text-neutral-400 dark:[&_span]:text-neutral-100">
             <div className="truncate">
               Captain: <span className="font-medium text-neutral-900">{group.captain.name} ⭐</span>
             </div>
@@ -137,8 +137,8 @@ function GroupSection({
   return (
     <section className="space-y-4">
       <div className="space-y-1">
-        <h2 className="text-2xl font-semibold tracking-tight text-neutral-950">{title}</h2>
-        <p className="text-sm text-neutral-600">{description}</p>
+        <h2 className="text-2xl font-semibold tracking-tight text-neutral-950 dark:text-neutral-50">{title}</h2>
+        <p className="text-sm text-neutral-600 dark:text-neutral-400">{description}</p>
       </div>
       <div className="grid gap-4 md:grid-cols-2">
         {groups.map((group) => (
@@ -200,9 +200,9 @@ export default async function GroupsPage(): Promise<JSX.Element> {
 
   if (groups.length === 0) {
     return (
-      <Card className="border-dashed border-neutral-300 bg-white">
+      <Card className="border-dashed border-neutral-300 bg-white dark:border-neutral-700 dark:bg-neutral-900">
         <CardHeader>
-          <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-neutral-100 text-neutral-700">
+          <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300">
             <CalendarDays className="h-5 w-5" />
           </div>
           <CardTitle>No groups yet</CardTitle>
@@ -220,14 +220,14 @@ export default async function GroupsPage(): Promise<JSX.Element> {
 
   return (
     <div className="space-y-8">
-      <section className="overflow-hidden rounded-3xl border border-neutral-200 bg-[linear-gradient(135deg,#f8fafc_0%,#ffffff_52%,#dbeafe_100%)] p-8 shadow-sm">
+      <section className="overflow-hidden rounded-3xl border border-neutral-200 bg-[linear-gradient(135deg,#f8fafc_0%,#ffffff_52%,#dbeafe_100%)] p-8 shadow-sm dark:border-neutral-800 dark:bg-[linear-gradient(135deg,#172033_0%,#0a0a0a_52%,#172554_100%)]">
         <div className="space-y-2">
           <Badge className="w-fit" variant="secondary">
             <Users className="mr-2 h-3.5 w-3.5" />
             Your Groups
           </Badge>
-          <h1 className="text-4xl font-semibold tracking-tight text-neutral-950">Play plans, organized.</h1>
-          <p className="max-w-2xl text-sm leading-6 text-neutral-600">
+          <h1 className="text-4xl font-semibold tracking-tight text-neutral-950 dark:text-neutral-50">Play plans, organized.</h1>
+          <p className="max-w-2xl text-sm leading-6 text-neutral-600 dark:text-neutral-400">
             Check who&apos;s in, which groups are confirmed, and jump straight into the chat.
           </p>
         </div>

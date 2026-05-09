@@ -149,17 +149,17 @@ export default async function MapPage(): Promise<JSX.Element> {
   return (
     <div className="space-y-6">
       <section className="space-y-2">
-        <div className="flex items-center gap-2 text-sm font-medium text-neutral-600">
+        <div className="flex items-center gap-2 text-sm font-medium text-neutral-600 dark:text-neutral-400">
           <MapPin className="h-4 w-4" />
           Venues and live play
         </div>
-        <h1 className="text-4xl font-semibold tracking-tight text-neutral-950">Pulse Map</h1>
-        <p className="max-w-2xl text-sm text-neutral-600">
+        <h1 className="text-4xl font-semibold tracking-tight text-neutral-950 dark:text-neutral-50">Pulse Map</h1>
+        <p className="max-w-2xl text-sm text-neutral-600 dark:text-neutral-400">
           Live view of today&apos;s forming groups, active venues, and scheduled events around {city.name}.
         </p>
       </section>
 
-      <div className="overflow-hidden rounded-3xl border border-neutral-200 bg-white shadow-sm">
+      <div className="overflow-hidden rounded-3xl border border-neutral-200 bg-white shadow-sm dark:border-neutral-800 dark:bg-neutral-950">
         <PulseMap
           center={{ lat: city.lat, lng: city.lng }}
           cityName={city.name}

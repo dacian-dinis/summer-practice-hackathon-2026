@@ -55,7 +55,7 @@ function Notice({ message }: { message: string | null }): JSX.Element | null {
   }
 
   return (
-    <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+    <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-900 dark:bg-amber-950/60 dark:text-amber-200">
       {message}
     </div>
   );
@@ -69,7 +69,7 @@ export function OnboardingRedirect(): JSX.Element {
   }, [router]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-6 text-sm text-neutral-600">
+    <div className="flex min-h-screen items-center justify-center px-6 text-sm text-neutral-600 dark:text-neutral-400">
       Redirecting to onboarding...
     </div>
   );
@@ -111,14 +111,14 @@ export function OnboardingProfileForm({
       <Notice message={notice} />
       <div className="grid gap-6 md:grid-cols-[160px_1fr] md:items-center">
         <div className="flex justify-center">
-          <Avatar className="h-32 w-32 border border-neutral-200 bg-neutral-100 shadow-sm">
+          <Avatar className="h-32 w-32 border border-neutral-200 bg-neutral-100 shadow-sm dark:border-neutral-700 dark:bg-neutral-800">
             {photoUrl ? <AvatarImage alt={name || "Your avatar"} src={photoUrl} /> : null}
-            <AvatarFallback className="bg-neutral-900 text-3xl font-semibold text-white">
+            <AvatarFallback className="bg-neutral-900 text-3xl font-semibold text-white dark:bg-neutral-100 dark:text-neutral-950">
               {getInitials(name)}
             </AvatarFallback>
           </Avatar>
         </div>
-        <Card className="border-neutral-200 bg-white shadow-sm">
+        <Card className="border-neutral-200 bg-white shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
           <CardHeader>
             <CardTitle>Your profile name</CardTitle>
             <CardDescription>
@@ -127,7 +127,7 @@ export function OnboardingProfileForm({
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium text-neutral-800" htmlFor="onboarding-name">
+              <label className="text-sm font-medium text-neutral-800 dark:text-neutral-200" htmlFor="onboarding-name">
                 Name
               </label>
               <Input
@@ -138,7 +138,7 @@ export function OnboardingProfileForm({
                 value={name}
               />
             </div>
-            <div className="text-xs text-neutral-500">Avatar initials update automatically from your name.</div>
+            <div className="text-xs text-neutral-500 dark:text-neutral-400">Avatar initials update automatically from your name.</div>
           </CardContent>
         </Card>
       </div>
@@ -242,7 +242,7 @@ export function OnboardingBioForm({
   return (
     <form className="space-y-6" onSubmit={handleSubmit}>
       <Notice message={notice} />
-      <Card className="border-neutral-200 bg-white shadow-sm">
+      <Card className="border-neutral-200 bg-white shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
         <CardHeader>
           <CardTitle>Tell people what you play</CardTitle>
           <CardDescription>
@@ -258,7 +258,7 @@ export function OnboardingBioForm({
             value={bio}
           />
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="text-sm text-neutral-500">Need help? Let AI pull likely sports from your bio.</div>
+            <div className="text-sm text-neutral-500 dark:text-neutral-400">Need help? Let AI pull likely sports from your bio.</div>
             <Button disabled={isDetecting} onClick={() => void handleDetectSports()} type="button" variant="outline">
               {isDetecting ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -271,7 +271,7 @@ export function OnboardingBioForm({
         </CardContent>
       </Card>
 
-      <Card className="border-neutral-200 bg-neutral-50">
+      <Card className="border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-950">
         <CardHeader>
           <CardTitle>Preview sports</CardTitle>
           <CardDescription>Adjust the selection before continuing.</CardDescription>
@@ -293,7 +293,7 @@ export function OnboardingBioForm({
                     className={
                       selected
                         ? "border-neutral-900 bg-neutral-900 px-4 py-2 text-white"
-                        : "border-neutral-300 bg-white px-4 py-2 text-neutral-700"
+                        : "border-neutral-300 bg-white px-4 py-2 text-neutral-700 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-300"
                     }
                     variant="outline"
                   >
@@ -304,13 +304,13 @@ export function OnboardingBioForm({
             })}
           </div>
           {selectedSportIds.length === 0 ? (
-            <div className="text-sm text-neutral-500">No sports selected yet.</div>
+            <div className="text-sm text-neutral-500 dark:text-neutral-400">No sports selected yet.</div>
           ) : null}
         </CardContent>
       </Card>
 
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <Link className="text-sm text-neutral-500 transition-colors hover:text-neutral-900" href="/onboarding/profile">
+        <Link className="text-sm text-neutral-500 transition-colors hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100" href="/onboarding/profile">
           Back
         </Link>
         <Button className="min-w-[190px]" disabled={isPending} type="submit">
@@ -330,7 +330,7 @@ export function OnboardingAvailabilityList({
   return (
     <div className="grid gap-4 md:grid-cols-2">
       {items.map((item) => (
-        <Card className="border-neutral-200 bg-white shadow-sm" key={item.sportId}>
+        <Card className="border-neutral-200 bg-white shadow-sm dark:border-neutral-800 dark:bg-neutral-900" key={item.sportId}>
           <CardHeader className="space-y-2">
             <CardTitle className="text-xl">{item.sportName}</CardTitle>
             <CardDescription>Are you available to play this one today?</CardDescription>
@@ -373,7 +373,7 @@ export function OnboardingFinishButton(): JSX.Element {
     <div className="space-y-3">
       <Notice message={notice} />
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <Link className="text-sm text-neutral-500 transition-colors hover:text-neutral-900" href="/onboarding/bio">
+        <Link className="text-sm text-neutral-500 transition-colors hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100" href="/onboarding/bio">
           Back
         </Link>
         <Button className="min-w-[140px]" disabled={isPending} onClick={handleFinish} type="button">
