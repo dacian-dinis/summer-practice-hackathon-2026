@@ -219,11 +219,13 @@ async function main() {
       update: {
         bio: user.bio,
         skill: user.skill,
+        onboardedAt: new Date(),
       },
       create: {
         name: user.name,
         bio: user.bio,
         skill: user.skill,
+        onboardedAt: new Date(),
       },
     });
 

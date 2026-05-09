@@ -1,5 +1,6 @@
 "use server";
 
+import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
@@ -10,6 +11,7 @@ const saveProfileSchema = z.object({
   name: z.string().trim().min(1).max(60),
   bio: z.string().trim().max(500),
   skill: z.number().int().min(1).max(5),
+  photoUrl: z.union([z.string().max(800_000), z.null()]),
   sportIds: z.array(z.string().min(1)),
 });
 
@@ -38,6 +40,7 @@ export async function saveProfile(
           name: parsed.data.name,
           bio: parsed.data.bio || null,
           skill: parsed.data.skill,
+          photoUrl: parsed.data.photoUrl,
         },
       });
 
@@ -53,6 +56,11 @@ export async function saveProfile(
           })),
         });
       }
+    });
+
+    cookies().set("userId", currentUser.id, {
+      path: "/",
+      sameSite: "lax",
     });
 
     revalidatePath("/");

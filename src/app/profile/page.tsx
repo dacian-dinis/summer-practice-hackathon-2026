@@ -161,6 +161,7 @@ export default async function ProfilePage(): Promise<JSX.Element> {
         availabilityToday={availabilityToday}
         initialBio={profileUser.bio ?? ""}
         initialName={profileUser.name}
+        initialPhotoUrl={profileUser.photoUrl}
         initialSkill={profileUser.skill}
         initialSportIds={profileUser.userSports.map((item) => item.sportId)}
         sports={sports.map((sport) => ({

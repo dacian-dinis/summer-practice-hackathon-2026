@@ -13,6 +13,7 @@ model User {
   bio             String?
   photoUrl        String?
   skill           Int            @default(3)
+  onboardedAt     DateTime?
   createdAt       DateTime       @default(now())
   userSports      UserSport[]
   availability    Availability[]

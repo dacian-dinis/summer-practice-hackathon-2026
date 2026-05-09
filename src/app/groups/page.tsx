@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { CalendarDays, ChevronRight, Users } from "lucide-react";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar } from "@/components/avatar";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -26,14 +26,6 @@ const SPORT_EMOJI: Record<string, string> = {
   Tennis: "🎾",
   Volleyball: "🏐",
 };
-
-function getInitials(name: string): string {
-  return name
-    .split(" ")
-    .map((part) => part.charAt(0).toUpperCase())
-    .join("")
-    .slice(0, 2);
-}
 
 function getStatusClasses(status: string): string {
   if (status === "CONFIRMED") {
@@ -98,12 +90,13 @@ function GroupCard({ group }: { group: GroupCardData }): JSX.Element {
           <div className="flex items-center gap-2">
             <div className="flex -space-x-3">
               {group.members.slice(0, 5).map((member) => (
-                <Avatar className="h-10 w-10 border-2 border-white" key={member.user.id}>
-                  {member.user.photoUrl ? <AvatarImage alt={member.user.name} src={member.user.photoUrl} /> : null}
-                  <AvatarFallback className="bg-neutral-200 text-xs font-semibold text-neutral-700">
-                    {getInitials(member.user.name)}
-                  </AvatarFallback>
-                </Avatar>
+                <Avatar
+                  className="h-10 w-10 border-2 border-white"
+                  fallbackClassName="bg-neutral-200 text-xs font-semibold text-neutral-700"
+                  key={member.user.id}
+                  name={member.user.name}
+                  src={member.user.photoUrl}
+                />
               ))}
             </div>
             {group.members.length > 5 ? (

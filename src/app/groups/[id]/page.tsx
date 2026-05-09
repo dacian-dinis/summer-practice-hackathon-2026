@@ -3,11 +3,11 @@ import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 
 import { CaptainCopilot } from "@/components/captain-copilot";
+import { Avatar } from "@/components/avatar";
 import { ConfirmGroupButton } from "@/components/confirm-group-button";
 import { EventCard } from "@/components/event-card";
 import { GroupChat } from "@/components/group-chat";
 import { PollVote } from "@/components/poll-vote";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -27,14 +27,6 @@ const SPORT_EMOJI: Record<string, string> = {
   Tennis: "🎾",
   Volleyball: "🏐",
 };
-
-function getInitials(name: string): string {
-  return name
-    .split(" ")
-    .map((part) => part.charAt(0).toUpperCase())
-    .join("")
-    .slice(0, 2);
-}
 
 function getStatusClasses(status: string): string {
   if (status === "CONFIRMED") {
@@ -285,14 +277,12 @@ export default async function GroupDetailPage({
               key={member.userId}
             >
               <div className="flex items-center gap-3">
-                <Avatar className="h-11 w-11">
-                  {member.user.photoUrl ? (
-                    <AvatarImage alt={member.user.name} src={member.user.photoUrl} />
-                  ) : null}
-                  <AvatarFallback className="bg-neutral-200 font-semibold text-neutral-700">
-                    {getInitials(member.user.name)}
-                  </AvatarFallback>
-                </Avatar>
+                <Avatar
+                  className="h-11 w-11"
+                  fallbackClassName="bg-neutral-200 font-semibold text-neutral-700"
+                  name={member.user.name}
+                  src={member.user.photoUrl}
+                />
                 <div>
                   <div className="font-medium text-neutral-950">
                     {member.user.name}

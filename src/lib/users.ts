@@ -11,8 +11,15 @@ export const USER_NAMES = [
 
 export type UserName = (typeof USER_NAMES)[number];
 
+export function slugifyUserName(name: string): string {
+  return name
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, "-");
+}
+
 export function slugifyUser(name: UserName): string {
-  return name.toLowerCase();
+  return slugifyUserName(name);
 }
 
 export function isUserName(value: string): value is UserName {
@@ -20,6 +27,6 @@ export function isUserName(value: string): value is UserName {
 }
 
 export function getUserNameFromSlug(slug: string): UserName {
-  const matchedUser = USER_NAMES.find((name) => slugifyUser(name) === slug);
+  const matchedUser = USER_NAMES.find((name) => slugifyUserName(name) === slug);
   return matchedUser ?? USER_NAMES[0];
 }

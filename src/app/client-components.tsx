@@ -1,11 +1,13 @@
 "use client";
 
+import type { ChangeEvent } from "react";
 import { Loader2, Save, Sparkles, Target, UserRound, Zap } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import type { SaveProfileInput } from "@/app/profile/actions";
 import { saveProfile } from "@/app/profile/actions";
+import { Avatar } from "@/components/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -38,6 +40,7 @@ type FindGroupButtonProps = {
 type ProfileFormProps = {
   initialName: string;
   initialBio: string;
+  initialPhotoUrl: string | null;
   initialSkill: number;
   sports: SportOption[];
   initialSportIds: string[];
@@ -46,6 +49,16 @@ type ProfileFormProps = {
     status: string;
   }>;
 };
+
+const MAX_PHOTO_DIMENSION = 512;
+const MAX_PHOTO_DATA_URL_LENGTH = 500_000;
+const PHOTO_DETECT_SPORTS = new Set([
+  "Football",
+  "Tennis",
+  "Basketball",
+  "Padel",
+  "Volleyball",
+]);
 
 function Notice({ message }: { message: string | null }): JSX.Element | null {
   if (!message) {
@@ -228,6 +241,7 @@ function parseSportIdsFromAi(data: unknown, sports: SportOption[]): string[] {
 export function ProfileForm({
   initialName,
   initialBio,
+  initialPhotoUrl,
   initialSkill,
   sports,
   initialSportIds,
@@ -240,8 +254,12 @@ export function ProfileForm({
   const [name, setName] = useState(initialName);
   const [bio, setBio] = useState(initialBio);
   const [skill, setSkill] = useState(initialSkill);
+  const [photoUrl, setPhotoUrl] = useState<string | null>(initialPhotoUrl);
+  const [isProcessingPhoto, setIsProcessingPhoto] = useState(false);
+  const [isDetectingPhotoSports, setIsDetectingPhotoSports] = useState(false);
   const [selectedSportIds, setSelectedSportIds] = useState<string[]>(initialSportIds);
   const [notice, setNotice] = useState<string | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   function toggleSport(sportId: string): void {
     setSelectedSportIds((current) =>
@@ -260,6 +278,7 @@ export function ProfileForm({
     return {
       name: name.trim(),
       bio: bio.trim(),
+      photoUrl,
       skill,
       sportIds: selectedSportIds,
     };
@@ -268,6 +287,104 @@ export function ProfileForm({
   function showNotice(message: string): void {
     setNotice(message);
     toast({ title: message });
+  }
+
+  function loadImage(dataUrl: string): Promise<HTMLImageElement> {
+    return new Promise((resolve, reject) => {
+      const image = new Image();
+
+      image.onload = () => resolve(image);
+      image.onerror = () => reject(new Error("Could not read image"));
+      image.src = dataUrl;
+    });
+  }
+
+  function readFileAsDataUrl(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        if (typeof reader.result !== "string") {
+          reject(new Error("Could not read file"));
+          return;
+        }
+
+        resolve(reader.result);
+      };
+
+      reader.onerror = () => reject(new Error("Could not read file"));
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async function resizePhoto(file: File): Promise<string> {
+    const sourceDataUrl = await readFileAsDataUrl(file);
+    const image = await loadImage(sourceDataUrl);
+    const canvas = canvasRef.current;
+
+    if (!canvas) {
+      throw new Error("Canvas unavailable");
+    }
+
+    let targetWidth = image.naturalWidth;
+    let targetHeight = image.naturalHeight;
+    const maxDimension = Math.max(targetWidth, targetHeight);
+
+    if (maxDimension > MAX_PHOTO_DIMENSION) {
+      const scale = MAX_PHOTO_DIMENSION / maxDimension;
+      targetWidth = Math.max(1, Math.round(targetWidth * scale));
+      targetHeight = Math.max(1, Math.round(targetHeight * scale));
+    }
+
+    const context = canvas.getContext("2d");
+
+    if (!context) {
+      throw new Error("Canvas unavailable");
+    }
+
+    for (let attempt = 0; attempt < 5; attempt += 1) {
+      canvas.width = targetWidth;
+      canvas.height = targetHeight;
+      context.clearRect(0, 0, targetWidth, targetHeight);
+      context.fillStyle = "#ffffff";
+      context.fillRect(0, 0, targetWidth, targetHeight);
+      context.drawImage(image, 0, 0, targetWidth, targetHeight);
+
+      for (const quality of [0.9, 0.8, 0.7, 0.6, 0.5]) {
+        const candidate = canvas.toDataURL("image/jpeg", quality);
+
+        if (candidate.length <= MAX_PHOTO_DATA_URL_LENGTH) {
+          return candidate;
+        }
+      }
+
+      targetWidth = Math.max(1, Math.round(targetWidth * 0.85));
+      targetHeight = Math.max(1, Math.round(targetHeight * 0.85));
+    }
+
+    throw new Error("Photo is still too large after resizing");
+  }
+
+  async function handlePhotoChange(event: ChangeEvent<HTMLInputElement>): Promise<void> {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+
+    if (!file) {
+      return;
+    }
+
+    setNotice(null);
+    setIsProcessingPhoto(true);
+
+    try {
+      const nextPhotoUrl = await resizePhoto(file);
+      setPhotoUrl(nextPhotoUrl);
+      toast({ title: "Photo ready" });
+    } catch {
+      showNotice("Could not process photo");
+    } finally {
+      setIsProcessingPhoto(false);
+    }
   }
 
   async function handleDetectSports(): Promise<void> {
@@ -307,6 +424,55 @@ export function ProfileForm({
       showNotice("AI not available");
     } finally {
       setIsDetecting(false);
+    }
+  }
+
+  async function handleDetectSportsFromPhoto(): Promise<void> {
+    if (!photoUrl) {
+      showNotice("Add a photo first");
+      return;
+    }
+
+    setNotice(null);
+    setIsDetectingPhotoSports(true);
+
+    try {
+      const response = await fetch("/api/ai/extract-sports-from-photo", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ photoDataUrl: photoUrl }),
+      });
+
+      if (!response.ok) {
+        showNotice("Photo AI not available");
+        return;
+      }
+
+      const data: unknown = await response.json();
+      const values =
+        typeof data === "object" && data !== null && Array.isArray((data as { sports?: unknown }).sports)
+          ? (data as { sports: unknown[] }).sports
+          : [];
+
+      const sportByName = new Map(sports.map((sport) => [sport.name, sport.id]));
+      const nextSportIds = values
+        .filter((value): value is string => typeof value === "string" && PHOTO_DETECT_SPORTS.has(value))
+        .map((value) => sportByName.get(value) ?? null)
+        .filter((value): value is string => value !== null);
+
+      if (nextSportIds.length === 0) {
+        showNotice("No sports detected from photo");
+        return;
+      }
+
+      setSelectedSportIds((current) => Array.from(new Set([...current, ...nextSportIds])));
+      toast({ title: `Photo AI detected ${nextSportIds.length} sports` });
+    } catch {
+      showNotice("Photo AI not available");
+    } finally {
+      setIsDetectingPhotoSports(false);
     }
   }
 
@@ -353,6 +519,49 @@ export function ProfileForm({
         </div>
         <CardContent className="space-y-6 p-6">
           <Notice message={notice} />
+          <canvas className="hidden" ref={canvasRef} />
+          <div className="space-y-4 rounded-2xl border border-neutral-200 bg-neutral-50 p-4">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+              <Avatar
+                className="h-24 w-24 border border-neutral-200"
+                fallbackClassName="bg-neutral-200 text-2xl font-semibold text-neutral-700"
+                name={name.trim() || initialName}
+                src={photoUrl}
+              />
+              <div className="space-y-3">
+                <div>
+                  <div className="text-sm font-medium text-neutral-900">Profile photo</div>
+                  <div className="text-sm text-neutral-500">
+                    JPG output, max 512x512, kept under roughly 500 KB before save.
+                  </div>
+                </div>
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                  <input
+                    accept="image/*"
+                    className="block text-sm text-neutral-600 file:mr-4 file:rounded-full file:border-0 file:bg-neutral-900 file:px-4 file:py-2 file:text-sm file:font-medium file:text-white"
+                    disabled={isProcessingPhoto}
+                    onChange={(event) => void handlePhotoChange(event)}
+                    type="file"
+                  />
+                  <Button
+                    className="min-h-10"
+                    disabled={!photoUrl || isDetectingPhotoSports || isProcessingPhoto}
+                    onClick={() => void handleDetectSportsFromPhoto()}
+                    size="sm"
+                    type="button"
+                    variant="outline"
+                  >
+                    {isDetectingPhotoSports ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      <Sparkles className="mr-2 h-4 w-4" />
+                    )}
+                    ✨ Detect sports from photo
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
           <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
             <div className="space-y-6">
               <div className="space-y-2">

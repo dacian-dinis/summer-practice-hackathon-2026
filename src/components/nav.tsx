@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { useRef } from "react";
 
-import { USER_NAMES, type UserName } from "@/lib/users";
 import { switchUserAction } from "@/app/actions";
+import { USER_NAMES, isUserName } from "@/lib/users";
 
 const NAV_LINKS = [
   { href: "/", label: "Home" },
@@ -14,15 +14,12 @@ const NAV_LINKS = [
 ] as const;
 
 type NavProps = {
-  currentUserName: UserName;
+  currentUserName: string;
 };
-
-function slugifyUser(name: UserName): string {
-  return name.toLowerCase();
-}
 
 export function Nav({ currentUserName }: NavProps): JSX.Element {
   const formRef = useRef<HTMLFormElement>(null);
+  const hasCurrentUserOption = isUserName(currentUserName);
 
   return (
     <header className="border-b bg-white/90 backdrop-blur">
@@ -50,11 +47,10 @@ export function Nav({ currentUserName }: NavProps): JSX.Element {
             onChange={() => formRef.current?.requestSubmit()}
             className="h-10 min-w-0 flex-1 rounded-md border bg-background px-3 text-sm sm:min-w-44"
           >
+            {!hasCurrentUserOption ? <option value={currentUserName}>{currentUserName}</option> : null}
             {USER_NAMES.map((name) => {
-              const slug = slugifyUser(name);
-
               return (
-                <option key={slug} value={name}>
+                <option key={name} value={name}>
                   {name}
                 </option>
               );
