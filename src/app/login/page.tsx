@@ -14,8 +14,8 @@ export default async function LoginPage(): Promise<JSX.Element> {
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center gap-8 px-4 py-10">
-      <Link aria-label="showup2move home" href="/">
-        <Logo priority size="lg" />
+      <Link aria-label="ShowUp2Move home" href="/">
+        <Logo size="md" />
       </Link>
       <LoginForm />
     </div>

@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ShowUp2Move — B (Chevron Pin) Variations</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,400..900;1,400..900&family=Archivo+Black&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; padding: 0; background: #0a0a0a; color: #fff;
+    font-family: 'Archivo', sans-serif; }
+  #root { width: 100vw; height: 100vh; }
+  .dc-note { font-family: 'JetBrains Mono', monospace; font-size: 12px;
+    line-height: 1.6; opacity: 0.75; max-width: 640px; }
+  .dc-note b { color: #FC5200; font-weight: 600; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="design-canvas.jsx"></script>
+<script type="text/babel" src="b-variations.jsx"></script>
+
+<script type="text/babel">
+const { DesignCanvas, DCSection, DCArtboard } = window;
+const W = 920, H = 520;
+
+const App = () => (
+  <DesignCanvas
+    title="B · Chevron Pin — variations"
+    subtitle="10 takes on the same idea: pin shape + chevron motion. Pick a flavor."
+  >
+    <DCSection
+      id="shape"
+      title="Shape & composition"
+      note={<div className="dc-note">
+        Same DNA, different geometry. <b>B2 (negative-space)</b> is the most iconic and scales
+        smallest; <b>B4 (arrow-pin)</b> is the most distinct silhouette; <b>B7 (motion)</b> is the
+        most dynamic. Click any artboard to focus.
+      </div>}
+    >
+      <DCArtboard id="b1" label="B1 · original" width={W} height={H}><B1 /></DCArtboard>
+      <DCArtboard id="b2" label="B2 · negative-space ⭐" width={W} height={H}><B2 /></DCArtboard>
+      <DCArtboard id="b3" label="B3 · tilted + speed lines" width={W} height={H}><B3 /></DCArtboard>
+      <DCArtboard id="b4" label="B4 · arrow-pin" width={W} height={H}><B4 /></DCArtboard>
+      <DCArtboard id="b5" label="B5 · geometric" width={W} height={H}><B5 /></DCArtboard>
+      <DCArtboard id="b6" label="B6 · two pins meeting" width={W} height={H}><B6 /></DCArtboard>
+      <DCArtboard id="b7" label="B7 · layered motion" width={W} height={H}><B7 /></DCArtboard>
+      <DCArtboard id="b8" label="B8 · outline duotone" width={W} height={H}><B8 /></DCArtboard>
+      <DCArtboard id="b9" label="B9 · chevrons piercing" width={W} height={H}><B9 /></DCArtboard>
+      <DCArtboard id="b10" label="B10 · two-tone" width={W} height={H}><B10 /></DCArtboard>
+    </DCSection>
+
+    <DCSection
+      id="palette"
+      title="Color exploration"
+      note={<div className="dc-note">
+        The negative-space mark across 8 palettes — Strava-orange is still the strongest, but
+        the night/lime combo and the ink/orange combo are close seconds.
+      </div>}
+    >
+      <DCArtboard id="palette" label="palettes · 8 options" width={W} height={H}>
+        <PaletteStrip />
+      </DCArtboard>
+    </DCSection>
+
+    <DCSection
+      id="contexts"
+      title="In context"
+      note={<div className="dc-note">
+        Side-by-side app icons + a hero splash with a sticker sheet of color treatments.
+      </div>}
+    >
+      <DCArtboard id="icons" label="App icons · 8 variants" width={W} height={H}>
+        <IconsCompare />
+      </DCArtboard>
+      <DCArtboard id="hero" label="Hero · splash + stickers" width={W} height={H}>
+        <Hero />
+      </DCArtboard>
+    </DCSection>
+  </DesignCanvas>
+);
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>

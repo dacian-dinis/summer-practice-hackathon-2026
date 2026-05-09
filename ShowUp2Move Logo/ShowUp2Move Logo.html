@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ShowUp2Move — Logo Exploration</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,400..900;1,400..900&family=Archivo+Black&family=Anton&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; padding: 0; background: #0a0a0a; color: #fff;
+    font-family: 'Archivo', sans-serif; }
+  #root { width: 100vw; height: 100vh; }
+  /* Style the canvas notes inside DCSection */
+  .dc-note { font-family: 'JetBrains Mono', monospace; font-size: 12px;
+    line-height: 1.6; opacity: 0.7; max-width: 560px; }
+  .dc-note b { color: #FC5200; font-weight: 600; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="design-canvas.jsx"></script>
+<script type="text/babel" src="logos.jsx"></script>
+
+<script type="text/babel">
+const { DesignCanvas, DCSection, DCArtboard } = window;
+
+const W = 920, H = 520;
+
+const App = () => (
+  <DesignCanvas
+    title="ShowUp2Move — Logo Exploration"
+    subtitle="Bold athletic · kinetic · Strava-energy. 8 directions + contexts."
+  >
+    <DCSection
+      id="intro"
+      title="System & direction"
+      note={
+        <div className="dc-note">
+          Aesthetic: <b>bold athletic / kinetic</b>. Heavy italic sans (Archivo Black / Anton)
+          paired with a small monospace (JetBrains Mono) for tags & metadata.
+          Anchors: a high-energy <b>orange</b> (#FC5200), a sharp <b>red</b> (#FF3D14, #E8341A),
+          plus an electric <b>lime</b> (#C5F03B) and a calm <b>field-green</b> (#16C172) for variety.
+          The "2" is the hook in every direction — bolt, arrow, badge, or punctuation.
+          Click any artboard to focus it fullscreen.
+        </div>
+      }
+    >
+      <DCArtboard id="01" label="01 · Bolt wordmark" width={W} height={H}>
+        <Logo01 />
+      </DCArtboard>
+      <DCArtboard id="02" label="02 · Kinetic stripes" width={W} height={H}>
+        <Logo02 />
+      </DCArtboard>
+    </DCSection>
+
+    <DCSection
+      id="badge-and-mark"
+      title="Badges & marks"
+      note={<div className="dc-note">
+        Lockups with a standalone mark — works as an app icon, social avatar, or patch.
+      </div>}
+    >
+      <DCArtboard id="03" label="03 · SU2M monogram" width={W} height={H}>
+        <Logo03 />
+      </DCArtboard>
+      <DCArtboard id="04" label="04 · Play forward" width={W} height={H}>
+        <Logo04 />
+      </DCArtboard>
+      <DCArtboard id="07" label="07 · Chevron stack" width={W} height={H}>
+        <Logo07 />
+      </DCArtboard>
+      <DCArtboard id="06" label="06 · Pin + figure" width={W} height={H}>
+        <Logo06 />
+      </DCArtboard>
+    </DCSection>
+
+    <DCSection
+      id="wordmarks"
+      title="Wordmark-driven"
+      note={<div className="dc-note">
+        Pure-type directions. Stronger for header use; pair with one of the marks above for an icon.
+      </div>}
+    >
+      <DCArtboard id="05" label="05 · Stacked editorial" width={W} height={H}>
+        <Logo05 />
+      </DCArtboard>
+      <DCArtboard id="08" label="08 · Refined athletic" width={W} height={H}>
+        <Logo08 />
+      </DCArtboard>
+    </DCSection>
+
+    <DCSection
+      id="contexts"
+      title="In context"
+      note={<div className="dc-note">
+        Sanity checks: home-screen icon test, social avatar, merch, splash screen.
+      </div>}
+    >
+      <DCArtboard id="ctx-icons" label="App icons · 4 directions" width={W} height={H}>
+        <IconsRow />
+      </DCArtboard>
+      <DCArtboard id="ctx-merch" label="Avatar + merch" width={W} height={H}>
+        <SocialMerch />
+      </DCArtboard>
+      <DCArtboard id="ctx-splash" label="Splash screen" width={W} height={H}>
+        <Splash />
+      </DCArtboard>
+    </DCSection>
+  </DesignCanvas>
+);
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>

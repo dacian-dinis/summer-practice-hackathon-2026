@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ShowUp2Move — Final Combinations</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,400..900;1,400..900&family=Archivo+Black&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; padding: 0; background: #0a0a0a; color: #fff;
+    font-family: 'Archivo', sans-serif; }
+  #root { width: 100vw; height: 100vh; }
+  .dc-note { font-family: 'JetBrains Mono', monospace; font-size: 12px;
+    line-height: 1.6; opacity: 0.75; max-width: 620px; }
+  .dc-note b { color: #FC5200; font-weight: 600; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="design-canvas.jsx"></script>
+<script type="text/babel" src="finals.jsx"></script>
+
+<script type="text/babel">
+const { DesignCanvas, DCSection, DCArtboard } = window;
+const W = 920, H = 520;
+
+const App = () => (
+  <DesignCanvas
+    title="ShowUp2Move — Final Combinations"
+    subtitle="03 (monogram) · 06 (pin) · 07 (chevrons) · 08 (refined wordmark) — recombined."
+  >
+    <DCSection
+      id="recipe"
+      title="The recipe"
+      note={<div className="dc-note">
+        Every final pairs a <b>mark</b> (left) with the <b>refined wordmark from 08</b> (right) —
+        chip-2, baseline rule, monospace metadata strip. The four marks are different mash-ups
+        of 03 / 06 / 07. Pick a mark; the wordmark stays consistent across the system.
+      </div>}
+    >
+      <DCArtboard id="A" label="A · Pin monogram (03+06+08)" width={W} height={H}>
+        <FinalA />
+      </DCArtboard>
+      <DCArtboard id="B" label="B · Chevron pin (06+07+08)" width={W} height={H}>
+        <FinalB />
+      </DCArtboard>
+      <DCArtboard id="C" label="C · Chevron monogram (03+07+08)" width={W} height={H}>
+        <FinalC />
+      </DCArtboard>
+      <DCArtboard id="D" label="D · Running pin + trail (06+07+08)" width={W} height={H}>
+        <FinalD />
+      </DCArtboard>
+    </DCSection>
+
+    <DCSection
+      id="context"
+      title="In context"
+      note={<div className="dc-note">
+        Home-screen icons compared side-by-side, plus dark/light/one-color treatments
+        for the leading pick and a splash mock.
+      </div>}
+    >
+      <DCArtboard id="icons" label="App icons · all 4 marks" width={W} height={H}>
+        <FinalIconsRow />
+      </DCArtboard>
+      <DCArtboard id="variants" label="A · color treatments" width={W} height={H}>
+        <VariantsA />
+      </DCArtboard>
+      <DCArtboard id="splash" label="A · splash screen" width={W} height={H}>
+        <FinalSplash />
+      </DCArtboard>
+    </DCSection>
+  </DesignCanvas>
+);
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
