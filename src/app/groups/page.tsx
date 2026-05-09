@@ -12,6 +12,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { getCurrentUser } from "@/lib/auth";
+import { getDict } from "@/lib/i18n";
 import { prisma } from "@/lib/prisma";
 import { SPORT_EMOJI } from "@/lib/sports";
 import { todayDate } from "@/lib/today";
@@ -19,6 +20,11 @@ import { todayDate } from "@/lib/today";
 export const metadata: Metadata = {
   title: "Groups",
 };
+
+function getStatusLabel(status: string, dict: Record<string, string>): string {
+  const key = `groups.status.${status.toLowerCase()}` as keyof typeof dict;
+  return dict[key] ?? status;
+}
 
 function getStatusClasses(status: string): string {
   if (status === "CONFIRMED") {
@@ -43,16 +49,12 @@ function formatGroupDate(date: string): string {
 }
 
 type GroupCardData = {
-  id: string;
-  date: string;
-  status: string;
-  sport: {
-    name: string;
-  };
   captain: {
     id: string;
     name: string;
   };
+  date: string;
+  id: string;
   members: Array<{
     user: {
       id: string;
@@ -60,12 +62,22 @@ type GroupCardData = {
       photoUrl: string | null;
     };
   }>;
+  sport: {
+    name: string;
+  };
+  status: string;
 };
 
-function GroupCard({ group }: { group: GroupCardData }): JSX.Element {
+function GroupCard({
+  dict,
+  group,
+}: {
+  dict: Record<string, string>;
+  group: GroupCardData;
+}): JSX.Element {
   return (
     <Link className="block" href={`/groups/${group.id}`}>
-      <Card className="h-full border-neutral-200 bg-white transition-transform hover:-translate-y-1 hover:shadow-md dark:border-neutral-800 dark:bg-neutral-900">
+      <Card className="h-full rounded-md border-2 border-brand-ink bg-white shadow-none transition-transform hover:-translate-y-1 dark:border-neutral-50 dark:bg-neutral-950">
         <CardHeader className="space-y-4">
           <div className="flex items-start justify-between gap-4">
             <div className="space-y-2">
@@ -75,7 +87,7 @@ function GroupCard({ group }: { group: GroupCardData }): JSX.Element {
               <CardDescription>{formatGroupDate(group.date)}</CardDescription>
             </div>
             <Badge className={getStatusClasses(group.status)} variant="secondary">
-              {group.status}
+              {getStatusLabel(group.status, dict)}
             </Badge>
           </div>
         </CardHeader>
@@ -99,12 +111,12 @@ function GroupCard({ group }: { group: GroupCardData }): JSX.Element {
             ) : null}
           </div>
 
-          <div className="flex items-center justify-between gap-3 text-sm text-neutral-600 dark:text-neutral-400 dark:[&_span]:text-neutral-100">
+          <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-neutral-600 dark:text-neutral-400 dark:[&_span]:text-neutral-100">
             <div className="truncate">
-              Captain: <span className="font-medium text-neutral-900">{group.captain.name} ⭐</span>
+              {dict["groups.captain"]}: <span className="font-medium text-neutral-900">{group.captain.name} ⭐</span>
             </div>
             <div className="flex items-center gap-1 text-neutral-500">
-              Open
+              {dict["groups.view"]}
               <ChevronRight className="h-4 w-4" />
             </div>
           </div>
@@ -115,13 +127,15 @@ function GroupCard({ group }: { group: GroupCardData }): JSX.Element {
 }
 
 function GroupSection({
+  description,
+  dict,
   groups,
   title,
-  description,
 }: {
+  description: string;
+  dict: Record<string, string>;
   groups: GroupCardData[];
   title: string;
-  description: string;
 }): JSX.Element | null {
   if (groups.length === 0) {
     return null;
@@ -135,7 +149,7 @@ function GroupSection({
       </div>
       <div className="grid gap-4 md:grid-cols-2">
         {groups.map((group) => (
-          <GroupCard group={group} key={group.id} />
+          <GroupCard dict={dict} group={group} key={group.id} />
         ))}
       </div>
     </section>
@@ -144,10 +158,11 @@ function GroupSection({
 
 export default async function GroupsPage(): Promise<JSX.Element> {
   const currentUser = await getCurrentUser();
+  const dict = getDict();
 
   if (!currentUser) {
     return (
-      <Card>
+      <Card className="rounded-md border-2 border-brand-ink bg-white shadow-none dark:border-neutral-50 dark:bg-neutral-950">
         <CardHeader>
           <CardTitle>No users found</CardTitle>
         </CardHeader>
@@ -193,15 +208,13 @@ export default async function GroupsPage(): Promise<JSX.Element> {
 
   if (groups.length === 0) {
     return (
-      <Card className="border-dashed border-neutral-300 bg-white dark:border-neutral-700 dark:bg-neutral-900">
+      <Card className="rounded-md border-2 border-dashed border-brand-ink bg-white shadow-none dark:border-neutral-50 dark:bg-neutral-950">
         <CardHeader>
-          <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300">
+          <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-md bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300">
             <CalendarDays className="h-5 w-5" />
           </div>
-          <CardTitle>No groups yet</CardTitle>
-          <CardDescription>
-            No groups yet — mark availability and click Find my group on Home
-          </CardDescription>
+          <CardTitle>{dict["groups.emptyTitle"]}</CardTitle>
+          <CardDescription>{dict["groups.emptyBody"]}</CardDescription>
         </CardHeader>
       </Card>
     );
@@ -213,28 +226,31 @@ export default async function GroupsPage(): Promise<JSX.Element> {
 
   return (
     <div className="space-y-8">
-      <section className="overflow-hidden rounded-3xl border border-neutral-200 bg-[linear-gradient(135deg,#f8fafc_0%,#ffffff_52%,#dbeafe_100%)] p-8 shadow-sm dark:border-neutral-800 dark:bg-[linear-gradient(135deg,#172033_0%,#0a0a0a_52%,#172554_100%)]">
-        <div className="space-y-2">
+      <section className="overflow-hidden rounded-md border-2 border-brand-ink bg-[linear-gradient(135deg,#f8fafc_0%,#ffffff_52%,#dbeafe_100%)] p-6 shadow-none dark:border-neutral-50 dark:bg-[linear-gradient(135deg,#172033_0%,#0a0a0a_52%,#172554_100%)] sm:p-8">
+        <div className="space-y-3">
+          <div className="font-mono-label text-sm text-neutral-600 dark:text-neutral-300">{dict["groups.eyebrow"]}</div>
           <Badge className="w-fit" variant="secondary">
             <Users className="mr-2 h-3.5 w-3.5" />
-            Your Groups
+            {dict["groups.title"]}
           </Badge>
-          <h1 className="text-4xl font-semibold tracking-tight text-neutral-950 dark:text-neutral-50">Play plans, organized.</h1>
+          <h1 className="font-display text-3xl tracking-tight text-neutral-950 dark:text-neutral-50 sm:text-4xl">{dict["groups.title"]}</h1>
           <p className="max-w-2xl text-sm leading-6 text-neutral-600 dark:text-neutral-400">
-            Check who&apos;s in, which groups are confirmed, and jump straight into the chat.
+            {dict["groups.subhead"]}
           </p>
         </div>
       </section>
 
       <GroupSection
-        description="Groups happening today."
+        description={dict["groups.todayBody"]}
+        dict={dict}
         groups={todayGroups}
-        title="Today"
+        title={dict["groups.today"]}
       />
       <GroupSection
-        description="Everything outside today, including upcoming matches and older groups."
+        description={dict["groups.otherBody"]}
+        dict={dict}
         groups={upcomingOrOtherGroups}
-        title="Upcoming/Other"
+        title={dict["groups.other"]}
       />
     </div>
   );

@@ -9,6 +9,8 @@ import {
   finishOnboarding,
   saveOnboardingBio,
   saveOnboardingProfile,
+  saveOnboardingSkill,
+  saveOnboardingTimes,
 } from "@/app/onboarding/actions";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -22,6 +24,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
 
 type SportOption = {
   id: string;
@@ -33,6 +36,69 @@ type AvailabilityOption = {
   sportName: string;
   status: "YES" | "NO" | null;
 };
+
+type ProfileLabels = {
+  avatarHint: string;
+  cardBody: string;
+  cardTitle: string;
+  name: string;
+  namePlaceholder: string;
+  submit: string;
+};
+
+type BioLabels = {
+  back: string;
+  cardBody: string;
+  cardTitle: string;
+  detect: string;
+  detectHint: string;
+  emptySports: string;
+  placeholder: string;
+  previewBody: string;
+  previewTitle: string;
+  submit: string;
+};
+
+type SkillLabels = {
+  back: string;
+  desc1: string;
+  desc2: string;
+  desc3: string;
+  desc4: string;
+  desc5: string;
+  label1: string;
+  label2: string;
+  label3: string;
+  label4: string;
+  label5: string;
+  submit: string;
+};
+
+type TimesLabels = {
+  afternoon: string;
+  back: string;
+  evening: string;
+  lunch: string;
+  morning: string;
+  submit: string;
+  weekends: string;
+};
+
+const PLAYTIME_OPTIONS = [
+  { id: "mornings", emoji: "🌅" },
+  { id: "lunch", emoji: "🥪" },
+  { id: "afternoons", emoji: "☀️" },
+  { id: "evenings", emoji: "🌙" },
+  { id: "weekends", emoji: "🎯" },
+] as const;
+
+const SKILL_OPTIONS = [
+  { level: 1, emoji: "🙂" },
+  { level: 2, emoji: "🎾" },
+  { level: 3, emoji: "💪" },
+  { level: 4, emoji: "⚡" },
+  { level: 5, emoji: "🏅" },
+] as const;
 
 function getInitials(name: string): string {
   const parts = name
@@ -54,29 +120,31 @@ function Notice({ message }: { message: string | null }): JSX.Element | null {
   }
 
   return (
-    <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-900 dark:bg-amber-950/60 dark:text-amber-200">
+    <div className="rounded-md border-2 border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-900 dark:bg-amber-950/60 dark:text-amber-200">
       {message}
     </div>
   );
 }
 
-export function OnboardingRedirect(): JSX.Element {
+export function OnboardingRedirect({ label }: { label: string }): JSX.Element {
   useEffect(() => {
     window.location.assign("/onboarding/profile");
   }, []);
 
   return (
     <div className="flex min-h-screen items-center justify-center px-6 text-sm text-neutral-600 dark:text-neutral-400">
-      Redirecting to onboarding...
+      {label}
     </div>
   );
 }
 
 export function OnboardingProfileForm({
   initialName,
+  labels,
   photoUrl,
 }: {
   initialName: string;
+  labels: ProfileLabels;
   photoUrl: string | null;
 }): JSX.Element {
   const [name, setName] = useState(initialName);
@@ -106,41 +174,43 @@ export function OnboardingProfileForm({
       <Notice message={notice} />
       <div className="grid gap-6 md:grid-cols-[160px_1fr] md:items-center">
         <div className="flex justify-center">
-          <Avatar className="h-32 w-32 border border-neutral-200 bg-neutral-100 shadow-sm dark:border-neutral-700 dark:bg-neutral-800">
+          <Avatar className="h-32 w-32 border-2 border-brand-ink bg-neutral-100 shadow-none dark:border-neutral-50 dark:bg-neutral-800">
             {photoUrl ? <AvatarImage alt={name || "Your avatar"} src={photoUrl} /> : null}
             <AvatarFallback className="bg-neutral-900 text-3xl font-semibold text-white dark:bg-neutral-100 dark:text-neutral-950">
               {getInitials(name)}
             </AvatarFallback>
           </Avatar>
         </div>
-        <Card className="border-neutral-200 bg-white shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
+        <Card className="rounded-md border-2 border-brand-ink bg-white shadow-none dark:border-neutral-50 dark:bg-neutral-950">
           <CardHeader>
-            <CardTitle>Your profile name</CardTitle>
-            <CardDescription>
-              This is what other players will see when groups and matches are formed.
-            </CardDescription>
+            <CardTitle>{labels.cardTitle}</CardTitle>
+            <CardDescription>{labels.cardBody}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <label className="text-sm font-medium text-neutral-800 dark:text-neutral-200" htmlFor="onboarding-name">
-                Name
+                {labels.name}
               </label>
               <Input
                 id="onboarding-name"
                 maxLength={60}
                 onChange={(event) => setName(event.target.value)}
-                placeholder="Your name"
+                placeholder={labels.namePlaceholder}
                 value={name}
               />
             </div>
-            <div className="text-xs text-neutral-500 dark:text-neutral-400">Avatar initials update automatically from your name.</div>
+            <div className="text-xs text-neutral-500 dark:text-neutral-400">{labels.avatarHint}</div>
           </CardContent>
         </Card>
       </div>
       <div className="flex items-center justify-end gap-3">
-        <Button className="min-w-[170px]" disabled={isPending} type="submit">
+        <Button
+          className="min-h-11 min-w-[170px] rounded-md bg-brand font-bold uppercase tracking-wider text-white hover:bg-brand-deep"
+          disabled={isPending}
+          type="submit"
+        >
           {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-          Save and continue
+          {labels.submit}
         </Button>
       </div>
     </form>
@@ -150,10 +220,12 @@ export function OnboardingProfileForm({
 export function OnboardingBioForm({
   initialBio,
   initialSportIds,
+  labels,
   sports,
 }: {
   initialBio: string;
   initialSportIds: string[];
+  labels: BioLabels;
   sports: SportOption[];
 }): JSX.Element {
   const [bio, setBio] = useState(initialBio);
@@ -228,46 +300,50 @@ export function OnboardingBioForm({
         return;
       }
 
-      window.location.assign("/onboarding/availability");
+      window.location.assign("/onboarding/skill");
     });
   }
 
   return (
     <form className="space-y-6" onSubmit={handleSubmit}>
       <Notice message={notice} />
-      <Card className="border-neutral-200 bg-white shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
+      <Card className="rounded-md border-2 border-brand-ink bg-white shadow-none dark:border-neutral-50 dark:bg-neutral-950">
         <CardHeader>
-          <CardTitle>Tell people what you play</CardTitle>
-          <CardDescription>
-            Mention your sports, level, and when you usually join so matching has better context.
-          </CardDescription>
+          <CardTitle>{labels.cardTitle}</CardTitle>
+          <CardDescription>{labels.cardBody}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <Textarea
             className="min-h-[180px]"
             maxLength={500}
             onChange={(event) => setBio(event.target.value)}
-            placeholder="I play tennis on weeknights, football on weekends, and I'm up for doubles most evenings."
+            placeholder={labels.placeholder}
             value={bio}
           />
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="text-sm text-neutral-500 dark:text-neutral-400">Need help? Let AI pull likely sports from your bio.</div>
-            <Button disabled={isDetecting} onClick={() => void handleDetectSports()} type="button" variant="outline">
+            <div className="text-sm text-neutral-500 dark:text-neutral-400">{labels.detectHint}</div>
+            <Button
+              className="min-h-11 rounded-md border-2 border-brand-ink"
+              disabled={isDetecting}
+              onClick={() => void handleDetectSports()}
+              type="button"
+              variant="outline"
+            >
               {isDetecting ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               ) : (
                 <Sparkles className="mr-2 h-4 w-4" />
               )}
-              {"\u2728"} Detect my sports
+              {labels.detect}
             </Button>
           </div>
         </CardContent>
       </Card>
 
-      <Card className="border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-950">
+      <Card className="rounded-md border-2 border-brand-ink bg-brand-cream shadow-none dark:border-neutral-50 dark:bg-neutral-950">
         <CardHeader>
-          <CardTitle>Preview sports</CardTitle>
-          <CardDescription>Adjust the selection before continuing.</CardDescription>
+          <CardTitle>{labels.previewTitle}</CardTitle>
+          <CardDescription>{labels.previewBody}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex flex-wrap gap-3">
@@ -277,7 +353,7 @@ export function OnboardingBioForm({
               return (
                 <button
                   aria-pressed={selected}
-                  className="rounded-full"
+                  className="rounded-md"
                   key={sport.id}
                   onClick={() => toggleSport(sport.id)}
                   type="button"
@@ -285,8 +361,8 @@ export function OnboardingBioForm({
                   <Badge
                     className={
                       selected
-                        ? "border-neutral-900 bg-neutral-900 px-4 py-2 text-white"
-                        : "border-neutral-300 bg-white px-4 py-2 text-neutral-700 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-300"
+                        ? "border-2 border-brand bg-brand px-4 py-2 text-white"
+                        : "border-2 border-brand-ink bg-white px-4 py-2 text-neutral-700 dark:border-neutral-50 dark:bg-neutral-900 dark:text-neutral-300"
                     }
                     variant="outline"
                   >
@@ -297,18 +373,186 @@ export function OnboardingBioForm({
             })}
           </div>
           {selectedSportIds.length === 0 ? (
-            <div className="text-sm text-neutral-500 dark:text-neutral-400">No sports selected yet.</div>
+            <div className="text-sm text-neutral-500 dark:text-neutral-400">{labels.emptySports}</div>
           ) : null}
         </CardContent>
       </Card>
 
       <div className="flex flex-wrap items-center justify-between gap-3">
         <Link className="text-sm text-neutral-500 transition-colors hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100" href="/onboarding/profile">
-          Back
+          {labels.back}
         </Link>
-        <Button className="min-w-[190px]" disabled={isPending} type="submit">
+        <Button
+          className="min-h-11 min-w-[190px] rounded-md bg-brand font-bold uppercase tracking-wider text-white hover:bg-brand-deep"
+          disabled={isPending}
+          type="submit"
+        >
           {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-          Looks good, continue
+          {labels.submit}
+        </Button>
+      </div>
+    </form>
+  );
+}
+
+export function OnboardingSkillForm({
+  initialSkill,
+  labels,
+}: {
+  initialSkill: number;
+  labels: SkillLabels;
+}): JSX.Element {
+  const [skill, setSkill] = useState(initialSkill);
+  const [notice, setNotice] = useState<string | null>(null);
+  const [isPending, startTransition] = useTransition();
+  const optionLabels = [labels.label1, labels.label2, labels.label3, labels.label4, labels.label5];
+  const optionDescriptions = [labels.desc1, labels.desc2, labels.desc3, labels.desc4, labels.desc5];
+
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>): void {
+    event.preventDefault();
+    setNotice(null);
+
+    startTransition(async () => {
+      const result = await saveOnboardingSkill({ skill });
+
+      if (!result.ok) {
+        setNotice(result.error ?? "Could not save your skill.");
+        return;
+      }
+
+      window.location.assign("/onboarding/times");
+    });
+  }
+
+  return (
+    <form className="space-y-6" onSubmit={handleSubmit}>
+      <Notice message={notice} />
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+        {SKILL_OPTIONS.map((option, index) => {
+          const selected = skill === option.level;
+
+          return (
+            <button
+              aria-pressed={selected}
+              className={cn(
+                "rounded-md border-2 border-brand-ink bg-white p-4 text-left transition-colors hover:border-brand dark:border-neutral-50 dark:bg-neutral-950",
+                selected && "border-brand bg-brand text-white",
+              )}
+              key={option.level}
+              onClick={() => setSkill(option.level)}
+              type="button"
+            >
+              <Card className="border-0 bg-transparent shadow-none">
+                <CardContent className="space-y-3 p-0">
+                  <div className="text-3xl">{option.emoji}</div>
+                  <div className="space-y-1">
+                    <div className="font-display text-xl">{optionLabels[index]}</div>
+                    <div className={cn("text-sm leading-5 text-neutral-600 dark:text-neutral-400", selected && "text-white/90")}>
+                      {optionDescriptions[index]}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <Link className="text-sm text-neutral-500 transition-colors hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100" href="/onboarding/bio">
+          {labels.back}
+        </Link>
+        <Button
+          className="min-h-11 min-w-[220px] rounded-md bg-brand font-bold uppercase tracking-wider text-white hover:bg-brand-deep"
+          disabled={isPending}
+          type="submit"
+        >
+          {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+          {labels.submit}
+        </Button>
+      </div>
+    </form>
+  );
+}
+
+export function OnboardingTimesForm({
+  initialPlaytimes,
+  labels,
+}: {
+  initialPlaytimes: string[];
+  labels: TimesLabels;
+}): JSX.Element {
+  const [playtimes, setPlaytimes] = useState<string[]>(initialPlaytimes);
+  const [notice, setNotice] = useState<string | null>(null);
+  const [isPending, startTransition] = useTransition();
+  const optionLabels: Record<string, string> = {
+    mornings: labels.morning,
+    lunch: labels.lunch,
+    afternoons: labels.afternoon,
+    evenings: labels.evening,
+    weekends: labels.weekends,
+  };
+
+  function togglePlaytime(playtime: string): void {
+    setPlaytimes((current) =>
+      current.includes(playtime)
+        ? current.filter((item) => item !== playtime)
+        : [...current, playtime],
+    );
+  }
+
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>): void {
+    event.preventDefault();
+    setNotice(null);
+
+    startTransition(async () => {
+      const result = await saveOnboardingTimes({ playtimes });
+
+      if (!result.ok) {
+        setNotice(result.error ?? "Could not save your play times.");
+        return;
+      }
+
+      window.location.assign("/onboarding/availability");
+    });
+  }
+
+  return (
+    <form className="space-y-6" onSubmit={handleSubmit}>
+      <Notice message={notice} />
+      <div className="flex flex-wrap gap-3">
+        {PLAYTIME_OPTIONS.map((option) => {
+          const selected = playtimes.includes(option.id);
+
+          return (
+            <button
+              aria-pressed={selected}
+              className={cn(
+                "min-h-11 rounded-md border-2 border-brand-ink bg-white px-4 py-3 text-sm font-semibold transition-colors hover:border-brand dark:border-neutral-50 dark:bg-neutral-950",
+                selected && "border-brand bg-brand text-white",
+              )}
+              key={option.id}
+              onClick={() => togglePlaytime(option.id)}
+              type="button"
+            >
+              <span className="mr-2">{option.emoji}</span>
+              {optionLabels[option.id]}
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <Link className="text-sm text-neutral-500 transition-colors hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100" href="/onboarding/skill">
+          {labels.back}
+        </Link>
+        <Button
+          className="min-h-11 min-w-[220px] rounded-md bg-brand font-bold uppercase tracking-wider text-white hover:bg-brand-deep"
+          disabled={isPending}
+          type="submit"
+        >
+          {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+          {labels.submit}
         </Button>
       </div>
     </form>
@@ -316,17 +560,19 @@ export function OnboardingBioForm({
 }
 
 export function OnboardingAvailabilityList({
+  descriptionLabel,
   items,
 }: {
+  descriptionLabel: string;
   items: AvailabilityOption[];
 }): JSX.Element {
   return (
     <div className="grid gap-4 md:grid-cols-2">
       {items.map((item) => (
-        <Card className="border-neutral-200 bg-white shadow-sm dark:border-neutral-800 dark:bg-neutral-900" key={item.sportId}>
+        <Card className="rounded-md border-2 border-brand-ink bg-white shadow-none dark:border-neutral-50 dark:bg-neutral-950" key={item.sportId}>
           <CardHeader className="space-y-2">
             <CardTitle className="text-xl">{item.sportName}</CardTitle>
-            <CardDescription>Are you available to play this one today?</CardDescription>
+            <CardDescription>{descriptionLabel}</CardDescription>
           </CardHeader>
           <CardContent>
             <AvailabilityToggle
@@ -341,7 +587,15 @@ export function OnboardingAvailabilityList({
   );
 }
 
-export function OnboardingFinishButton(): JSX.Element {
+export function OnboardingFinishButton({
+  backHref,
+  backLabel,
+  finishLabel,
+}: {
+  backHref: string;
+  backLabel: string;
+  finishLabel: string;
+}): JSX.Element {
   const [notice, setNotice] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
@@ -364,12 +618,17 @@ export function OnboardingFinishButton(): JSX.Element {
     <div className="space-y-3">
       <Notice message={notice} />
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <Link className="text-sm text-neutral-500 transition-colors hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100" href="/onboarding/bio">
-          Back
+        <Link className="text-sm text-neutral-500 transition-colors hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100" href={backHref}>
+          {backLabel}
         </Link>
-        <Button className="min-w-[140px]" disabled={isPending} onClick={handleFinish} type="button">
+        <Button
+          className="min-h-11 min-w-[140px] rounded-md bg-brand font-bold uppercase tracking-wider text-white hover:bg-brand-deep"
+          disabled={isPending}
+          onClick={handleFinish}
+          type="button"
+        >
           {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-          Finish
+          {finishLabel}
         </Button>
       </div>
     </div>

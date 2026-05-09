@@ -38,16 +38,39 @@ type FindGroupButtonProps = {
 };
 
 type ProfileFormProps = {
-  initialName: string;
-  initialBio: string;
-  initialPhotoUrl: string | null;
-  initialSkill: number;
-  sports: SportOption[];
-  initialSportIds: string[];
   availabilityToday: Array<{
     sportId: string;
     status: string;
   }>;
+  initialBio: string;
+  initialName: string;
+  initialPhotoUrl: string | null;
+  initialSkill: number;
+  initialSportIds: string[];
+  labels: {
+    advanced: string;
+    bioPlaceholder: string;
+    detectBio: string;
+    detectPhoto: string;
+    editBio: string;
+    beginner: string;
+    identity: string;
+    level: string;
+    name: string;
+    namePlaceholder: string;
+    photoBody: string;
+    photoTitle: string;
+    save: string;
+    selectedSports: string;
+    skill: string;
+    skillBody: string;
+    sports: string;
+    subhead: string;
+    title: string;
+    today: string;
+    uploadPhoto: string;
+  };
+  sports: SportOption[];
 };
 
 const MAX_PHOTO_DIMENSION = 512;
@@ -66,7 +89,7 @@ function Notice({ message }: { message: string | null }): JSX.Element | null {
   }
 
   return (
-    <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900 dark:border-amber-900 dark:bg-amber-950/60 dark:text-amber-200">
+    <div className="rounded-md border-2 border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900 dark:border-amber-900 dark:bg-amber-950/60 dark:text-amber-200">
       {message}
     </div>
   );
@@ -180,7 +203,7 @@ export function FindGroupButton({ sportIds }: FindGroupButtonProps): JSX.Element
         return;
       }
 
-      toast({ title: "Not enough players yet — invite a friend!" });
+      toast({ title: "Not enough players yet - invite a friend!" });
     } catch {
       setNotice("Could not start matching.");
       toast({ title: "Couldn't run matching." });
@@ -239,13 +262,14 @@ function parseSportIdsFromAi(data: unknown, sports: SportOption[]): string[] {
 }
 
 export function ProfileForm({
-  initialName,
+  availabilityToday,
   initialBio,
+  initialName,
   initialPhotoUrl,
   initialSkill,
-  sports,
   initialSportIds,
-  availabilityToday,
+  labels,
+  sports,
 }: ProfileFormProps): JSX.Element {
   const router = useRouter();
   const { toast } = useToast();
@@ -497,54 +521,53 @@ export function ProfileForm({
 
   return (
     <div className="space-y-6">
-      <Card className="overflow-hidden border-neutral-200 bg-white shadow-lg shadow-neutral-200/70 dark:border-neutral-800 dark:bg-neutral-900 dark:shadow-black/30">
+      <Card className="overflow-hidden rounded-md border-2 border-brand-ink bg-white shadow-none dark:border-neutral-50 dark:bg-neutral-950">
         <div className="bg-[radial-gradient(circle_at_top_left,_rgba(16,185,129,0.16),_transparent_30%),linear-gradient(135deg,#111827,#1f2937)] p-6 text-white">
-          <div className="flex items-start justify-between gap-4">
+          <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="space-y-2">
               <Badge className="w-fit bg-white/10 text-white" variant="secondary">
                 <UserRound className="mr-1 h-3.5 w-3.5" />
-                Your sports identity
+                {labels.identity}
               </Badge>
-              <h1 className="text-3xl font-semibold tracking-tight">Profile</h1>
-              <p className="max-w-2xl text-sm text-neutral-200">
-                Tune your bio, sports, and level so the matching flow has something useful to work with.
-              </p>
+              <h1 className="font-display text-3xl tracking-tight sm:text-4xl">{labels.title}</h1>
+              <p className="max-w-2xl text-sm text-neutral-200">{labels.subhead}</p>
             </div>
-            <div className="hidden rounded-2xl border border-white/10 bg-white/5 p-4 text-right md:block">
-              <div className="text-xs uppercase tracking-[0.24em] text-neutral-300">Today</div>
+            <div className="hidden rounded-md border-2 border-white/20 bg-white/5 p-4 text-right md:block">
+              <div className="text-xs uppercase tracking-[0.24em] text-neutral-300">{labels.today}</div>
               <div className="mt-2 text-2xl font-semibold">{selectedSportIds.length}</div>
-              <div className="text-sm text-neutral-300">sports selected</div>
+              <div className="text-sm text-neutral-300">{labels.selectedSports}</div>
             </div>
           </div>
         </div>
         <CardContent className="space-y-6 p-6">
           <Notice message={notice} />
           <canvas className="hidden" ref={canvasRef} />
-          <div className="space-y-4 rounded-2xl border border-neutral-200 bg-neutral-50 p-4 dark:border-neutral-800 dark:bg-neutral-950">
+          <div className="space-y-4 rounded-md border-2 border-brand-ink bg-neutral-50 p-4 dark:border-neutral-50 dark:bg-neutral-950">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
               <Avatar
-                className="h-24 w-24 border border-neutral-200 dark:border-neutral-700"
+                className="h-24 w-24 border-2 border-brand-ink dark:border-neutral-50"
                 fallbackClassName="bg-neutral-200 text-2xl font-semibold text-neutral-700 dark:bg-neutral-700 dark:text-neutral-100"
                 name={name.trim() || initialName}
                 src={photoUrl}
               />
               <div className="space-y-3">
                 <div>
-                  <div className="text-sm font-medium text-neutral-900 dark:text-neutral-100">Profile photo</div>
-                  <div className="text-sm text-neutral-500 dark:text-neutral-400">
-                    JPG output, max 512x512, kept under roughly 500 KB before save.
-                  </div>
+                  <div className="text-sm font-medium text-neutral-900 dark:text-neutral-100">{labels.photoTitle}</div>
+                  <div className="text-sm text-neutral-500 dark:text-neutral-400">{labels.photoBody}</div>
                 </div>
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-                  <input
-                    accept="image/*"
-                    className="block text-sm text-neutral-600 file:mr-4 file:rounded-full file:border-0 file:bg-neutral-900 file:px-4 file:py-2 file:text-sm file:font-medium file:text-white dark:text-neutral-400 dark:file:bg-neutral-100 dark:file:text-neutral-950"
-                    disabled={isProcessingPhoto}
-                    onChange={(event) => void handlePhotoChange(event)}
-                    type="file"
-                  />
+                  <label className="inline-flex min-h-11 cursor-pointer items-center justify-center rounded-md border-2 border-brand-ink bg-white px-4 py-2 text-sm font-bold uppercase tracking-wider text-neutral-900 dark:border-neutral-50 dark:bg-neutral-900 dark:text-neutral-100">
+                    {labels.uploadPhoto}
+                    <input
+                      accept="image/*"
+                      className="sr-only"
+                      disabled={isProcessingPhoto}
+                      onChange={(event) => void handlePhotoChange(event)}
+                      type="file"
+                    />
+                  </label>
                   <Button
-                    className="min-h-10"
+                    className="min-h-11 rounded-md border-2 border-brand-ink"
                     disabled={!photoUrl || isDetectingPhotoSports || isProcessingPhoto}
                     onClick={() => void handleDetectSportsFromPhoto()}
                     size="sm"
@@ -556,7 +579,7 @@ export function ProfileForm({
                     ) : (
                       <Sparkles className="mr-2 h-4 w-4" />
                     )}
-                    ✨ Detect sports from photo
+                    {labels.detectPhoto}
                   </Button>
                 </div>
               </div>
@@ -566,23 +589,23 @@ export function ProfileForm({
             <div className="space-y-6">
               <div className="space-y-2">
                 <label className="text-sm font-medium text-neutral-800 dark:text-neutral-200" htmlFor="profile-name">
-                  Name
+                  {labels.name}
                 </label>
                 <Input
                   id="profile-name"
                   onChange={(event) => setName(event.target.value)}
-                  placeholder="Your name"
+                  placeholder={labels.namePlaceholder}
                   value={name}
                 />
               </div>
 
               <div className="space-y-3">
-                <div className="flex items-center justify-between gap-3">
+                <div className="flex flex-wrap items-center justify-between gap-3">
                   <label className="text-sm font-medium text-neutral-800 dark:text-neutral-200" htmlFor="profile-bio">
-                    Bio
+                    {labels.editBio}
                   </label>
                   <Button
-                    className="min-h-10 shrink-0"
+                    className="min-h-11 shrink-0 rounded-md border-2 border-brand-ink"
                     disabled={isDetecting}
                     onClick={() => void handleDetectSports()}
                     size="sm"
@@ -594,31 +617,31 @@ export function ProfileForm({
                     ) : (
                       <Sparkles className="mr-2 h-4 w-4" />
                     )}
-                    Detect sports from bio
+                    {labels.detectBio}
                   </Button>
                 </div>
                 <Textarea
                   className="min-h-[160px]"
                   id="profile-bio"
                   onChange={(event) => setBio(event.target.value)}
-                  placeholder="Tell people what you play, where you play, and when you usually join."
+                  placeholder={labels.bioPlaceholder}
                   value={bio}
                 />
               </div>
             </div>
 
-            <Card className="border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-950">
+            <Card className="rounded-md border-2 border-brand-ink bg-neutral-50 shadow-none dark:border-neutral-50 dark:bg-neutral-950">
               <CardHeader className="pb-4">
-                <CardTitle className="text-lg">Skill Level</CardTitle>
-                <CardDescription>Use a simple 1 to 5 scale for how competitive you are.</CardDescription>
+                <CardTitle className="text-lg">{labels.skill}</CardTitle>
+                <CardDescription>{labels.skillBody}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between text-sm text-neutral-600 dark:text-neutral-400">
-                  <span>Beginner</span>
+                  <span>{labels.beginner}</span>
                   <span className="rounded-full bg-neutral-900 px-3 py-1 text-xs font-semibold text-white">
-                    Level {skill}
+                    {labels.level} {skill}
                   </span>
-                  <span>Advanced</span>
+                  <span>{labels.advanced}</span>
                 </div>
                 <input
                   className="h-2 w-full cursor-pointer appearance-none rounded-full bg-neutral-200 accent-neutral-900 dark:bg-neutral-800"
@@ -640,7 +663,7 @@ export function ProfileForm({
           <div className="space-y-3">
             <div className="flex items-center gap-2">
               <Target className="h-4 w-4 text-neutral-600 dark:text-neutral-400" />
-              <h2 className="text-sm font-medium text-neutral-800 dark:text-neutral-200">Sports</h2>
+              <h2 className="text-sm font-medium text-neutral-800 dark:text-neutral-200">{labels.sports}</h2>
             </div>
             <div className="flex flex-wrap gap-3">
               {sports.map((sport) => {
@@ -651,8 +674,8 @@ export function ProfileForm({
                   <button
                     aria-pressed={selected}
                     className={cn(
-                      "min-h-10 rounded-full border px-0 py-0 transition-transform hover:-translate-y-0.5",
-                      selected ? "border-neutral-900 dark:border-neutral-100" : "border-neutral-200 dark:border-neutral-800",
+                      "min-h-10 rounded-md border-2 px-0 py-0 transition-transform hover:-translate-y-0.5",
+                      selected ? "border-brand bg-brand" : "border-brand-ink dark:border-neutral-50",
                     )}
                     key={sport.id}
                     onClick={() => toggleSport(sport.id)}
@@ -662,7 +685,7 @@ export function ProfileForm({
                       className={cn(
                         "gap-2 px-4 py-2 text-sm",
                         selected
-                          ? "bg-neutral-900 text-white"
+                          ? "bg-brand text-white"
                           : "bg-white text-neutral-700 dark:bg-neutral-900 dark:text-neutral-300",
                       )}
                       variant="outline"
@@ -673,8 +696,8 @@ export function ProfileForm({
                           className={cn(
                             "rounded-full px-2 py-0.5 text-[10px] font-bold tracking-wide",
                             status === "YES"
-                              ? "bg-emerald-100 text-emerald-900 border-emerald-300 dark:bg-emerald-950 dark:text-emerald-300"
-                              : "bg-rose-100 text-rose-900 border-rose-300 dark:bg-rose-950 dark:text-rose-300",
+                              ? "bg-emerald-100 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-300"
+                              : "bg-rose-100 text-rose-900 dark:bg-rose-950 dark:text-rose-300",
                           )}
                         >
                           {status}
@@ -689,13 +712,13 @@ export function ProfileForm({
 
           <div className="flex justify-end">
             <Button
-              className="min-h-10 min-w-[160px] bg-neutral-950 text-white hover:opacity-95"
+              className="min-h-11 min-w-[160px] rounded-md bg-brand font-bold uppercase tracking-wider text-white hover:bg-brand-deep"
               disabled={isSaving}
               onClick={() => void handleSave()}
               type="button"
             >
               {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-              Save
+              {labels.save}
             </Button>
           </div>
         </CardContent>

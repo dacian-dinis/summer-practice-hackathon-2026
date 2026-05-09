@@ -4,6 +4,7 @@ import { MapPin } from "lucide-react";
 
 import type { PulseMapProps } from "@/components/pulse-map";
 import { resolveCity } from "@/lib/geo";
+import { getDict } from "@/lib/i18n";
 import { prisma } from "@/lib/prisma";
 import { todayDate } from "@/lib/today";
 
@@ -25,6 +26,7 @@ function formatEventTime(startsAt: Date): string {
 
 export default async function MapPage(): Promise<JSX.Element> {
   const city = await resolveCity();
+  const dict = getDict();
   const today = todayDate();
   const startOfDay = new Date(`${today}T00:00:00.000Z`);
   const endOfDay = new Date(`${today}T23:59:59.999Z`);
@@ -149,17 +151,18 @@ export default async function MapPage(): Promise<JSX.Element> {
   return (
     <div className="space-y-6">
       <section className="space-y-2">
+        <div className="font-mono-label text-sm text-neutral-600 dark:text-neutral-400">{dict["map.eyebrow"]}</div>
         <div className="flex items-center gap-2 text-sm font-medium text-neutral-600 dark:text-neutral-400">
           <MapPin className="h-4 w-4" />
-          Venues and live play
+          {dict["map.title"]}
         </div>
-        <h1 className="text-4xl font-semibold tracking-tight text-neutral-950 dark:text-neutral-50">Pulse Map</h1>
+        <h1 className="font-display text-3xl tracking-tight text-neutral-950 dark:text-neutral-50 sm:text-4xl">{dict["map.title"]}</h1>
         <p className="max-w-2xl text-sm text-neutral-600 dark:text-neutral-400">
-          Live view of today&apos;s forming groups, active venues, and scheduled events around {city.name}.
+          {dict["map.subhead"]} {city.name}.
         </p>
       </section>
 
-      <div className="overflow-hidden rounded-3xl border border-neutral-200 bg-white shadow-sm dark:border-neutral-800 dark:bg-neutral-950">
+      <div className="overflow-hidden rounded-md border-2 border-brand-ink bg-white shadow-none dark:border-neutral-50 dark:bg-neutral-950">
         <PulseMap
           center={{ lat: city.lat, lng: city.lng }}
           cityName={city.name}

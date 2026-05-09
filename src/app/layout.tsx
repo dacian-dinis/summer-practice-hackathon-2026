@@ -32,11 +32,18 @@ export default async function RootLayout({ children }: RootLayoutProps): Promise
   const locale = getLocale();
   const dict = getDict(locale);
   const navLabels = {
+    daysAgo: dict["notif.daysAgo"],
+    emptyNotifications: dict["notif.empty"],
     home: dict["nav.home"],
-    profile: dict["nav.profile"],
     groups: dict["nav.groups"],
-    map: dict["nav.map"],
+    hoursAgo: dict["notif.hoursAgo"],
+    justNow: dict["notif.justNow"],
     logout: dict["nav.logout"],
+    map: dict["nav.map"],
+    menu: dict["nav.menu"],
+    minutesAgo: dict["notif.minutesAgo"],
+    notifications: dict["nav.notifications"],
+    profile: dict["nav.profile"],
   };
   const isMarketingHome = currentUser === null && pathname === "/";
   const needsOnboarding = currentUser !== null && currentUser.onboardedAt === null && !isOnboardingPath && !isSharePath;
@@ -51,7 +58,7 @@ export default async function RootLayout({ children }: RootLayoutProps): Promise
       <html lang="en" suppressHydrationWarning>
         <body className={bodyClassName}>
           <ThemeProvider>
-            <OnboardingRedirect />
+            <OnboardingRedirect label={dict["onb.redirect"]} />
             <Toaster />
           </ThemeProvider>
         </body>
@@ -90,7 +97,14 @@ export default async function RootLayout({ children }: RootLayoutProps): Promise
       <html lang="en" suppressHydrationWarning>
         <body className={bodyClassName}>
           <ThemeProvider>
-            <MarketingNav />
+            <MarketingNav
+              labels={{
+                login: dict["nav.login"],
+                menu: dict["nav.menu"],
+                signup: dict["nav.signup"],
+              }}
+              locale={locale}
+            />
             <main>{children}</main>
             <Toaster />
           </ThemeProvider>

@@ -8,6 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { getDict } from "@/lib/i18n";
 import { formatKm } from "@/lib/distance";
 
 type EventCardProps = {
@@ -36,6 +37,7 @@ function formatTime(startsAt: Date): string {
 export function EventCard({ event, venue, distanceFromUserKm = null }: EventCardProps): JSX.Element {
   const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${venue.lat},${venue.lng}`;
   const calendarUrl = `/api/events/${event.id}/ics`;
+  const dict = getDict();
 
   return (
     <Card className="overflow-hidden rounded-md border-2 border-brand-ink bg-white shadow-none dark:border-neutral-50 dark:bg-neutral-950">
@@ -56,7 +58,7 @@ export function EventCard({ event, venue, distanceFromUserKm = null }: EventCard
               {distanceFromUserKm !== null ? (
                 <Badge className="gap-1 bg-sky-100 text-sky-900 dark:bg-sky-950 dark:text-sky-200" variant="secondary">
                   <MapPin className="h-3.5 w-3.5" />
-                  {formatKm(distanceFromUserKm)} away
+                  {formatKm(distanceFromUserKm)} {dict["event.away"]}
                 </Badge>
               ) : null}
             </div>
@@ -65,7 +67,7 @@ export function EventCard({ event, venue, distanceFromUserKm = null }: EventCard
       </div>
       <CardContent className="flex flex-col gap-4 pt-6 sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-1">
-          <div className="text-sm font-medium text-neutral-950 dark:text-neutral-50">Start time</div>
+          <div className="text-sm font-medium text-neutral-950 dark:text-neutral-50">{dict["event.startTime"]}</div>
           <div className="text-sm text-neutral-600 dark:text-neutral-400">{formatTime(event.startsAt)}</div>
         </div>
         <div className="flex flex-wrap items-center gap-4">
@@ -76,14 +78,14 @@ export function EventCard({ event, venue, distanceFromUserKm = null }: EventCard
             target="_blank"
           >
             <MapPin className="h-4 w-4" />
-            Open in Google Maps
+            {dict["event.openMaps"]}
           </a>
           <a
             className="inline-flex items-center gap-2 text-sm font-medium text-neutral-950 transition-colors hover:text-emerald-700 dark:text-neutral-100 dark:hover:text-emerald-400"
             href={calendarUrl}
           >
             <CalendarPlus className="h-4 w-4" />
-            Add to calendar
+            {dict["event.addCalendar"]}
           </a>
         </div>
       </CardContent>

@@ -10,6 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { getCurrentUser } from "@/lib/auth";
+import { getDict } from "@/lib/i18n";
 import { prisma } from "@/lib/prisma";
 import { todayDate } from "@/lib/today";
 
@@ -25,6 +26,7 @@ function addDays(date: string, days: number): string {
 
 export default async function NewEventPage(): Promise<JSX.Element> {
   const currentUser = await getCurrentUser();
+  const dict = getDict();
 
   if (!currentUser) {
     return (
@@ -72,15 +74,16 @@ export default async function NewEventPage(): Promise<JSX.Element> {
 
   return (
     <div className="space-y-8">
-      <section className="overflow-hidden rounded-3xl border border-neutral-200 bg-[linear-gradient(135deg,#fff7ed_0%,#ffffff_45%,#ecfccb_100%)] p-8 shadow-sm dark:border-neutral-800 dark:bg-[linear-gradient(135deg,#2a160b_0%,#0a0a0a_45%,#1a2e05_100%)]">
+      <section className="overflow-hidden rounded-md border-2 border-brand-ink bg-[linear-gradient(135deg,#fff7ed_0%,#ffffff_45%,#ecfccb_100%)] p-6 shadow-none dark:border-neutral-50 dark:bg-[linear-gradient(135deg,#2a160b_0%,#0a0a0a_45%,#1a2e05_100%)] sm:p-8">
         <div className="space-y-3">
+          <div className="font-mono-label text-sm text-neutral-600 dark:text-neutral-300">{dict["eventsNew.eyebrow"]}</div>
           <Badge className="w-fit" variant="secondary">
             <CalendarPlus className="mr-2 h-3.5 w-3.5" />
-            One-off event
+            {dict["eventsNew.badge"]}
           </Badge>
-          <h1 className="text-4xl font-semibold tracking-tight text-neutral-950 dark:text-neutral-50">Create an event directly</h1>
+          <h1 className="font-display text-3xl tracking-tight text-neutral-950 dark:text-neutral-50 sm:text-4xl">{dict["eventsNew.title"]}</h1>
           <p className="max-w-2xl text-sm leading-6 text-neutral-600 dark:text-neutral-400">
-            Skip matching when you already know the venue and time. This confirms the group immediately.
+            {dict["eventsNew.subhead"]}
           </p>
         </div>
       </section>

@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 import { getCurrentUser } from "@/lib/auth";
+import { getPlaytimesFromBio, mergeBioWithPlaytimes } from "@/lib/playtimes";
 import { prisma } from "@/lib/prisma";
 
 const saveProfileSchema = z.object({
@@ -36,7 +37,7 @@ export async function saveProfile(
         where: { id: currentUser.id },
         data: {
           name: parsed.data.name,
-          bio: parsed.data.bio || null,
+          bio: mergeBioWithPlaytimes(parsed.data.bio, getPlaytimesFromBio(currentUser.bio)),
           skill: parsed.data.skill,
           photoUrl: parsed.data.photoUrl,
         },

@@ -19,23 +19,36 @@ type NotificationsResponse = {
   items: NotificationItem[];
 };
 
-function formatRelative(iso: string): string {
+type NotificationBellLabels = {
+  daysAgo: string;
+  empty: string;
+  hoursAgo: string;
+  justNow: string;
+  minutesAgo: string;
+  notifications: string;
+};
+
+function formatRelative(iso: string, labels: NotificationBellLabels): string {
   const diff = Date.now() - new Date(iso).getTime();
   const seconds = Math.floor(diff / 1000);
 
-  if (seconds < 60) return "just now";
+  if (seconds < 60) return labels.justNow;
 
   const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `${minutes}m ago`;
+  if (minutes < 60) return `${minutes} ${labels.minutesAgo}`;
 
   const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
+  if (hours < 24) return `${hours} ${labels.hoursAgo}`;
 
   const days = Math.floor(hours / 24);
-  return `${days}d ago`;
+  return `${days} ${labels.daysAgo}`;
 }
 
-export function NotificationBell(): JSX.Element {
+export function NotificationBell({
+  labels,
+}: {
+  labels: NotificationBellLabels;
+}): JSX.Element {
   const [open, setOpen] = useState(false);
   const [data, setData] = useState<NotificationsResponse>({ unreadCount: 0, items: [] });
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -102,8 +115,8 @@ export function NotificationBell(): JSX.Element {
   return (
     <div className="relative" ref={containerRef}>
       <button
-        aria-label="Notifications"
-        className="relative inline-flex h-10 w-10 items-center justify-center rounded-md border border-neutral-200 bg-white text-neutral-700 transition-colors hover:bg-neutral-100 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-200 dark:hover:bg-neutral-800"
+        aria-label={labels.notifications}
+        className="relative inline-flex h-10 w-10 items-center justify-center rounded-md border-2 border-brand-ink bg-white text-neutral-700 transition-colors hover:bg-neutral-100 dark:border-neutral-50 dark:bg-neutral-900 dark:text-neutral-200 dark:hover:bg-neutral-800"
         onClick={() => void handleOpen()}
         type="button"
       >
@@ -118,12 +131,12 @@ export function NotificationBell(): JSX.Element {
       {open ? (
         <div className="absolute right-0 z-50 mt-2 w-80 rounded-md border-2 border-brand-ink bg-white shadow-lg dark:border-neutral-50 dark:bg-neutral-950">
           <div className="border-b-2 border-brand-ink px-4 py-3 dark:border-neutral-700">
-            <div className="font-mono-label text-brand-ink/60 dark:text-neutral-400">Notifications</div>
+            <div className="font-mono-label text-brand-ink/60 dark:text-neutral-400">{labels.notifications}</div>
           </div>
           <div className="max-h-96 overflow-y-auto">
             {data.items.length === 0 ? (
               <div className="px-4 py-6 text-center text-sm text-neutral-500 dark:text-neutral-400">
-                Nothing yet. Match with a group to get pinged.
+                {labels.empty}
               </div>
             ) : (
               <ul className="divide-y divide-neutral-100 dark:divide-neutral-800">
@@ -132,7 +145,7 @@ export function NotificationBell(): JSX.Element {
                     <div className="flex flex-col gap-1 px-4 py-3 transition-colors hover:bg-neutral-50 dark:hover:bg-neutral-900">
                       <div className="flex items-start justify-between gap-2">
                         <div className="text-sm font-semibold text-neutral-950 dark:text-neutral-50">{item.title}</div>
-                        <div className="shrink-0 text-[11px] text-neutral-400">{formatRelative(item.createdAt)}</div>
+                        <div className="shrink-0 text-[11px] text-neutral-400">{formatRelative(item.createdAt, labels)}</div>
                       </div>
                       <div className="text-xs text-neutral-600 dark:text-neutral-400">{item.body}</div>
                     </div>

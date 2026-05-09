@@ -9,6 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { getDict } from "@/lib/i18n";
 
 type TeamMember = {
   id: string;
@@ -49,7 +50,7 @@ function balanceTeams(members: TeamMember[]): [Team, Team] {
 }
 
 function teamAverage(team: Team): string {
-  if (team.members.length === 0) return "—";
+  if (team.members.length === 0) return "-";
   return (team.totalSkill / team.members.length).toFixed(1);
 }
 
@@ -60,6 +61,7 @@ export function TeamBalance({ members, sportName }: TeamBalanceProps): JSX.Eleme
 
   const [teamA, teamB] = balanceTeams(members);
   const skillDelta = Math.abs(teamA.totalSkill - teamB.totalSkill);
+  const dict = getDict();
 
   return (
     <Card className="rounded-md border-2 border-brand-ink bg-white shadow-none dark:border-neutral-50 dark:bg-neutral-950">
@@ -67,22 +69,22 @@ export function TeamBalance({ members, sportName }: TeamBalanceProps): JSX.Eleme
         <div className="flex flex-wrap items-center gap-2">
           <Badge className="bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300" variant="secondary">
             <Users className="mr-1 h-3.5 w-3.5" />
-            Skill-balanced split
+            {dict["balance.badge"]}
           </Badge>
           <Badge className="bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300" variant="secondary">
-            Δ {skillDelta} skill points
+            Δ {skillDelta} {dict["balance.delta"]}
           </Badge>
         </div>
-        <CardTitle className="text-xl">Suggested teams</CardTitle>
+        <CardTitle className="text-xl">{dict["balance.title"]}</CardTitle>
         <CardDescription>
-          Auto-balanced by skill so {sportName} stays competitive. Captain can override on the day.
+          {dict["balance.body"]} {sportName}.
         </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="grid gap-4 md:grid-cols-2">
           {[
-            { label: "Team A", team: teamA, accent: "bg-brand text-white" },
-            { label: "Team B", team: teamB, accent: "bg-bluebold text-white" },
+            { label: dict["balance.teamA"], team: teamA, accent: "bg-brand text-white" },
+            { label: dict["balance.teamB"], team: teamB, accent: "bg-bluebold text-white" },
           ].map(({ label, team, accent }) => (
             <div
               className="rounded-md border-2 border-brand-ink p-4 dark:border-neutral-700"
@@ -91,7 +93,7 @@ export function TeamBalance({ members, sportName }: TeamBalanceProps): JSX.Eleme
               <div className="mb-3 flex items-center justify-between">
                 <Badge className={`${accent} font-bold uppercase tracking-wider`}>{label}</Badge>
                 <div className="text-xs text-neutral-500 dark:text-neutral-400">
-                  Avg skill {teamAverage(team)}
+                  {dict["balance.avgSkill"]} {teamAverage(team)}
                 </div>
               </div>
               <ul className="space-y-2">

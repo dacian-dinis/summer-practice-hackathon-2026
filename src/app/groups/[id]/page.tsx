@@ -22,7 +22,9 @@ import { getCurrentUser } from "@/lib/auth";
 import { haversineKm } from "@/lib/distance";
 import { parsePendingPoll } from "@/lib/event-poll";
 import { resolveCity } from "@/lib/geo";
+import { getDict } from "@/lib/i18n";
 import { prisma } from "@/lib/prisma";
+import { rankFor } from "@/lib/ranks";
 
 const SPORT_EMOJI: Record<string, string> = {
   Basketball: "🏀",
@@ -64,9 +66,9 @@ type GroupDetailPageProps = {
 };
 
 type CompatibilityResponse = {
+  fallback: boolean;
   score: number;
   summary: string;
-  fallback: boolean;
 };
 
 async function getCompatibility(groupId: string): Promise<CompatibilityResponse | null> {
@@ -117,14 +119,25 @@ async function getCompatibility(groupId: string): Promise<CompatibilityResponse 
   }
 }
 
+function rankLabel(tier: string, dict: Record<string, string>): string {
+  const key = `rank.${tier.toLowerCase()}` as keyof typeof dict;
+  return dict[key] ?? tier;
+}
+
+function statusLabel(status: string, dict: Record<string, string>): string {
+  const key = `groups.status.${status.toLowerCase()}` as keyof typeof dict;
+  return dict[key] ?? status;
+}
+
 export default async function GroupDetailPage({
   params,
 }: GroupDetailPageProps): Promise<JSX.Element> {
   const currentUser = await getCurrentUser();
+  const dict = getDict();
 
   if (!currentUser) {
     return (
-      <Card>
+      <Card className="rounded-md border-2 border-brand-ink bg-white shadow-none dark:border-neutral-50 dark:bg-neutral-950">
         <CardHeader>
           <CardTitle>No users found</CardTitle>
         </CardHeader>
@@ -181,10 +194,10 @@ export default async function GroupDetailPage({
 
   if (!membership) {
     return (
-      <Card>
+      <Card className="rounded-md border-2 border-brand-ink bg-white shadow-none dark:border-neutral-50 dark:bg-neutral-950">
         <CardHeader>
-          <CardTitle>Not in this group</CardTitle>
-          <CardDescription>You can only view groups that include you as a member.</CardDescription>
+          <CardTitle>{dict["group.notMember"]}</CardTitle>
+          <CardDescription>{dict["group.notMemberBody"]}</CardDescription>
         </CardHeader>
       </Card>
     );
@@ -239,35 +252,56 @@ export default async function GroupDetailPage({
         })
       : null;
 
+  const rankCounts = new Map<string, number>(
+    await Promise.all(
+      group.members.map(
+        async (member): Promise<[string, number]> => [
+          member.userId,
+          await prisma.event.count({
+            where: {
+              startsAt: { lt: new Date() },
+              group: {
+                members: {
+                  some: {
+                    confirmed: true,
+                    userId: member.userId,
+                  },
+                },
+              },
+            },
+          }),
+        ],
+      ),
+    ),
+  );
+
   return (
     <div className="space-y-6">
-      <Card className="overflow-hidden border-neutral-200 bg-white shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
+      <Card className="overflow-hidden rounded-md border-2 border-brand-ink bg-white shadow-none dark:border-neutral-50 dark:bg-neutral-950">
         <div className="bg-[linear-gradient(135deg,#0f172a_0%,#1e293b_46%,#14532d_100%)] p-6 text-white">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div className="space-y-3">
-              <Badge className="w-fit bg-white/10 text-white" variant="secondary">
-                Group Detail
-              </Badge>
+              <div className="font-mono-label text-sm text-white/70">{dict["group.detailBadge"]}</div>
               <div className="space-y-2">
-                <h1 className="text-3xl font-semibold tracking-tight">
+                <h1 className="font-display text-3xl tracking-tight sm:text-4xl">
                   {SPORT_EMOJI[group.sport.name] ?? "🏅"} {group.sport.name}
                 </h1>
                 <p className="text-sm text-neutral-200">{formatGroupDate(group.date)}</p>
               </div>
               <div className="flex flex-wrap items-center gap-3 text-sm text-neutral-100">
                 <Badge className={getStatusClasses(group.status)} variant="secondary">
-                  {group.status}
+                  {statusLabel(group.status, dict)}
                 </Badge>
-                <span>Captain {group.captain.name} ⭐</span>
+                <span>{dict["groups.captain"]} {group.captain.name} ⭐</span>
                 {compatibility ? (
                   <Badge className="max-w-full gap-1 bg-white/10 text-white" variant="secondary">
-                    <span>✨ Compatibility {compatibility.score}</span>
+                    <span>✨ {dict["group.compatibility"]} {compatibility.score}</span>
                     <span className="truncate text-neutral-200">{compatibility.summary}</span>
                   </Badge>
                 ) : null}
               </div>
             </div>
-            <div className="flex flex-col items-end gap-3">
+            <div className="flex flex-wrap items-end gap-3">
               <ConfirmGroupButton
                 confirmed={membership.confirmed}
                 groupId={group.id}
@@ -278,7 +312,28 @@ export default async function GroupDetailPage({
         </div>
       </Card>
 
-      {!group.event ? <CaptainCopilot groupId={group.id} isCaptain={isCaptain} /> : null}
+      {!group.event ? (
+        <CaptainCopilot
+          groupId={group.id}
+          isCaptain={isCaptain}
+          labels={{
+            away: dict["copilot.away"],
+            button: dict["copilot.button"],
+            errorExistingEvent: dict["copilot.errorExistingEvent"],
+            errorGenerate: dict["copilot.errorGenerate"],
+            errorPollInvalid: dict["copilot.errorPollInvalid"],
+            errorPost: dict["copilot.errorPost"],
+            errorUnexpected: dict["copilot.errorUnexpected"],
+            fallback: dict["copilot.fallback"],
+            option: dict["copilot.option"],
+            postPoll: dict["copilot.postPoll"],
+            ready: dict["copilot.ready"],
+            ron: dict["copilot.ron"],
+            suggestedTime: dict["copilot.suggestedTime"],
+            title: dict["copilot.title"],
+          }}
+        />
+      ) : null}
 
       {group.event && pendingPoll && pollCandidates.length === 3 ? (
         <PollVote
@@ -306,41 +361,48 @@ export default async function GroupDetailPage({
         />
       ) : null}
 
-      <Card className="border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900">
+      <Card className="rounded-md border-2 border-brand-ink bg-white shadow-none dark:border-neutral-50 dark:bg-neutral-950">
         <CardHeader>
-          <CardTitle className="text-xl">Members</CardTitle>
-          <CardDescription>Who&apos;s in and who has confirmed.</CardDescription>
+          <CardTitle className="text-xl">{dict["group.members"]}</CardTitle>
+          <CardDescription>{dict["group.membersBody"]}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
-          {group.members.map((member) => (
-            <div
-              className="flex items-center justify-between gap-4 rounded-xl border border-neutral-200 px-4 py-3 dark:border-neutral-800 dark:bg-neutral-950"
-              key={member.userId}
-            >
-              <div className="flex items-center gap-3">
-                <Avatar
-                  className="h-11 w-11"
-                  fallbackClassName="bg-neutral-200 font-semibold text-neutral-700 dark:bg-neutral-700 dark:text-neutral-100"
-                  name={member.user.name}
-                  src={member.user.photoUrl}
-                />
-                <div>
-                  <div className="font-medium text-neutral-950 dark:text-neutral-50">
-                    {member.user.name}
-                    {member.userId === group.captainId ? " ⭐" : ""}
-                  </div>
-                  <div className="text-sm text-neutral-500 dark:text-neutral-400">
-                    {member.confirmed ? "Confirmed" : "Waiting for confirmation"}
+          {group.members.map((member) => {
+            const rank = rankFor(rankCounts.get(member.userId) ?? 0);
+
+            return (
+              <div
+                className="flex flex-wrap items-center justify-between gap-4 rounded-md border-2 border-brand-ink px-4 py-3 dark:border-neutral-700 dark:bg-neutral-950"
+                key={member.userId}
+              >
+                <div className="flex items-center gap-3">
+                  <Avatar
+                    className="h-11 w-11"
+                    fallbackClassName="bg-neutral-200 font-semibold text-neutral-700 dark:bg-neutral-700 dark:text-neutral-100"
+                    name={member.user.name}
+                    src={member.user.photoUrl}
+                  />
+                  <div>
+                    <div className="font-medium text-neutral-950 dark:text-neutral-50">
+                      {member.user.name}
+                      {member.userId === group.captainId ? " ⭐" : ""}
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2 text-sm text-neutral-500 dark:text-neutral-400">
+                      <Badge className={`${rank.color} rounded-md`} variant="secondary">
+                        {rank.emoji} {rankLabel(rank.tier, dict)}
+                      </Badge>
+                      <span>{member.confirmed ? dict["group.confirmed"] : dict["group.waiting"]}</span>
+                    </div>
                   </div>
                 </div>
+                {member.confirmed ? (
+                  <CheckCircle2 className="h-5 w-5 text-emerald-600" />
+                ) : (
+                  <div className="h-5 w-5 rounded-full border border-neutral-300 dark:border-neutral-700" />
+                )}
               </div>
-              {member.confirmed ? (
-                <CheckCircle2 className="h-5 w-5 text-emerald-600" />
-              ) : (
-                <div className="h-5 w-5 rounded-full border border-neutral-300 dark:border-neutral-700" />
-              )}
-            </div>
-          ))}
+            );
+          })}
         </CardContent>
       </Card>
 

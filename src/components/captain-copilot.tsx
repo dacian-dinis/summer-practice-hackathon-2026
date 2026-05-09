@@ -23,6 +23,23 @@ type UserLocation = {
   city: string;
 };
 
+type CaptainCopilotLabels = {
+  away: string;
+  button: string;
+  errorExistingEvent: string;
+  errorGenerate: string;
+  errorPollInvalid: string;
+  errorPost: string;
+  errorUnexpected: string;
+  fallback: string;
+  option: string;
+  postPoll: string;
+  ready: string;
+  ron: string;
+  suggestedTime: string;
+  title: string;
+};
+
 let cachedUserLocation: UserLocation | null = null;
 let userLocationPromise: Promise<UserLocation | null> | null = null;
 
@@ -108,11 +125,13 @@ const pollPostResponseSchema = z
 type CaptainCopilotProps = {
   groupId: string;
   isCaptain: boolean;
+  labels: CaptainCopilotLabels;
 };
 
 export function CaptainCopilot({
   groupId,
   isCaptain,
+  labels,
 }: CaptainCopilotProps): JSX.Element | null {
   const router = useRouter();
   const { toast } = useToast();
@@ -155,7 +174,7 @@ export function CaptainCopilot({
       });
 
       if (!response.ok) {
-        setError("Could not generate copilot suggestions.");
+        setError(labels.errorGenerate);
         return;
       }
 
@@ -163,16 +182,16 @@ export function CaptainCopilot({
       const parsed = copilotResponseSchema.safeParse(json);
 
       if (!parsed.success) {
-        setError("Copilot returned an unexpected response.");
+        setError(labels.errorUnexpected);
         return;
       }
 
       setSuggestion(parsed.data);
       toast({
-        title: parsed.data.fallback ? "Using fallback suggestions" : "✨ Copilot ready",
+        title: parsed.data.fallback ? labels.fallback : `✨ ${labels.ready}`,
       });
     } catch {
-      setError("Could not generate copilot suggestions.");
+      setError(labels.errorGenerate);
     } finally {
       setIsLoading(false);
     }
@@ -200,7 +219,7 @@ export function CaptainCopilot({
       });
 
       if (!response.ok) {
-        setError(response.status === 409 ? "This group already has an event." : "Could not post the poll.");
+        setError(response.status === 409 ? labels.errorExistingEvent : labels.errorPost);
         return;
       }
 
@@ -208,7 +227,7 @@ export function CaptainCopilot({
       const parsed = pollPostResponseSchema.safeParse(json);
 
       if (!parsed.success) {
-        setError("Poll was created, but the response was invalid.");
+        setError(labels.errorPollInvalid);
         return;
       }
 
@@ -217,7 +236,7 @@ export function CaptainCopilot({
         router.refresh();
       });
     } catch {
-      setError("Could not post the poll.");
+      setError(labels.errorPost);
     } finally {
       setIsPostingPoll(false);
     }
@@ -232,11 +251,11 @@ export function CaptainCopilot({
         type="button"
       >
         {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
-        AI Captain Copilot
+        {labels.button}
       </Button>
 
       {error ? (
-        <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 dark:border-rose-900 dark:bg-rose-950/60 dark:text-rose-200">
+        <div className="rounded-md border-2 border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 dark:border-rose-900 dark:bg-rose-950/60 dark:text-rose-200">
           {error}
         </div>
       ) : null}
@@ -249,11 +268,11 @@ export function CaptainCopilot({
                 {suggestion.weatherNote}
               </Badge>
               <Badge className="bg-sky-100 text-sky-800 dark:bg-sky-950 dark:text-sky-300" variant="secondary">
-                Suggested time {suggestion.suggestedTime}
+                {labels.suggestedTime} {suggestion.suggestedTime}
               </Badge>
             </div>
             <div>
-              <CardTitle className="text-xl">Captain Copilot Picks</CardTitle>
+              <CardTitle className="text-xl">{labels.title}</CardTitle>
               <CardDescription>{suggestion.draftMessage}</CardDescription>
             </div>
           </CardHeader>
@@ -261,16 +280,16 @@ export function CaptainCopilot({
             <div className="grid gap-4 lg:grid-cols-3">
               {suggestion.ranked.map((venue, index) => (
                 <div
-                  className="rounded-2xl border border-neutral-200 bg-neutral-50 p-4 dark:border-neutral-800 dark:bg-neutral-950"
+                  className="rounded-md border-2 border-brand-ink bg-neutral-50 p-4 dark:border-neutral-50 dark:bg-neutral-950"
                   key={venue.venueId}
                 >
                   <div className="mb-3 flex items-start justify-between gap-3">
                     <div>
-                      <div className="text-sm font-medium text-neutral-500 dark:text-neutral-400">Option {index + 1}</div>
+                      <div className="text-sm font-medium text-neutral-500 dark:text-neutral-400">{labels.option} {index + 1}</div>
                       <div className="text-lg font-semibold text-neutral-950 dark:text-neutral-50">{venue.name}</div>
                     </div>
                     <Badge className="bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300" variant="secondary">
-                      {venue.pricePerHour} RON
+                      {venue.pricePerHour} {labels.ron}
                     </Badge>
                   </div>
                   <div className="mb-3 flex items-start gap-2 text-sm text-neutral-600 dark:text-neutral-400">
@@ -287,7 +306,7 @@ export function CaptainCopilot({
                             lng: venue.lng,
                           }),
                         )}{" "}
-                        away
+                        {labels.away}
                       </span>
                     </div>
                   ) : null}
@@ -303,7 +322,7 @@ export function CaptainCopilot({
               type="button"
             >
               {isPostingPoll ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-              Post poll to group
+              {labels.postPoll}
             </Button>
           </CardContent>
         </Card>
