@@ -6,18 +6,12 @@ const requestSchema = z.object({
   bio: z.string().max(2000),
 });
 
-const allowedSports = [
-  "Football",
-  "Tennis",
-  "Basketball",
-  "Padel",
-  "Volleyball",
-] as const;
+import { ALLOWED_SPORTS } from "@/lib/sports";
 
-const allowedSportSet = new Set<string>(allowedSports);
+const allowedSportSet = new Set<string>(ALLOWED_SPORTS);
 
 const systemPrompt =
-  'You extract sports from a user bio. Return ONLY a JSON array of sport names from this whitelist (case-sensitive): Football, Tennis, Basketball, Padel, Volleyball. No prose, no markdown fences, just the array. Example: ["Tennis","Football"]. Empty array if no sports apply.';
+  'You extract sports from a user bio. Return ONLY a JSON array of sport names from this whitelist (case-sensitive): Football, Tennis, Basketball, Padel, Volleyball, Jogging, Cycling, Running, Yoga, Hiking. No prose, no markdown fences, just the array. Example: ["Tennis","Football"]. Empty array if no sports apply.';
 
 function extractFirstJsonArray(input: string): string[] {
   const startIndex = input.indexOf("[");

@@ -8,15 +8,9 @@ const requestSchema = z
   })
   .strict();
 
-const allowedSports = [
-  "Football",
-  "Tennis",
-  "Basketball",
-  "Padel",
-  "Volleyball",
-] as const;
+import { ALLOWED_SPORTS } from "@/lib/sports";
 
-const allowedSportSet = new Set<string>(allowedSports);
+const allowedSportSet = new Set<string>(ALLOWED_SPORTS);
 const imageMediaTypeSchema = z.enum([
   "image/jpeg",
   "image/png",
@@ -96,7 +90,7 @@ async function detectSportsFromPhoto(photoDataUrl: string): Promise<string[]> {
           },
           {
             type: "text",
-            text: "What sports does this person play, judging by the photo? Reply with ONLY a JSON array of names from this whitelist (case-sensitive): Football, Tennis, Basketball, Padel, Volleyball. Empty array if unclear.",
+            text: "What sports does this person play, judging by the photo? Reply with ONLY a JSON array of names from this whitelist (case-sensitive): Football, Tennis, Basketball, Padel, Volleyball, Jogging, Cycling, Running, Yoga, Hiking. Empty array if unclear.",
           },
         ],
       },

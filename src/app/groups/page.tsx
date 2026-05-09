@@ -13,18 +13,11 @@ import {
 } from "@/components/ui/card";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { SPORT_EMOJI } from "@/lib/sports";
 import { todayDate } from "@/lib/today";
 
 export const metadata: Metadata = {
   title: "Groups",
-};
-
-const SPORT_EMOJI: Record<string, string> = {
-  Basketball: "🏀",
-  Football: "⚽",
-  Padel: "🎾",
-  Tennis: "🎾",
-  Volleyball: "🏐",
 };
 
 function getStatusClasses(status: string): string {

@@ -3,6 +3,7 @@
 import "leaflet/dist/leaflet.css";
 
 import type { DivIcon } from "leaflet";
+import { cn } from "@/lib/utils";
 import { useEffect, useMemo, type ComponentType, type ReactNode } from "react";
 import {
   Circle,
@@ -14,6 +15,8 @@ import {
   ZoomControl,
   useMap,
 } from "react-leaflet";
+
+import { useTheme } from "next-themes";
 
 import { CITIES, DEFAULT_CITY } from "@/lib/cities";
 
@@ -318,6 +321,8 @@ export default function PulseMap({
   venues,
   events,
 }: PulseMapProps): JSX.Element {
+  const { resolvedTheme } = useTheme();
+  const isLight = resolvedTheme === "light";
   const showEmptyOverlay = groups.length === 0 && events.length === 0;
   const leafletCenter = toLeafletCenter(center);
   const venueIcon = useMemo(() => createVenueIcon(), []);
@@ -329,7 +334,14 @@ export default function PulseMap({
   );
 
   return (
-    <div className="pulse-map-shell relative h-[60vh] min-h-[420px] w-full overflow-hidden rounded-[1.75rem] border border-neutral-200 bg-slate-950 dark:border-white/10 dark:bg-[#020617] md:h-[75vh]">
+    <div
+      className={cn(
+        "pulse-map-shell relative h-[60vh] min-h-[420px] w-full overflow-hidden rounded-[1.75rem] md:h-[75vh]",
+        isLight
+          ? "pulse-map-shell--light border-2 border-brand-ink bg-brand-cream"
+          : "border border-neutral-200 bg-slate-950 dark:border-white/10 dark:bg-[#020617]",
+      )}
+    >
       <style jsx global>{`
         @keyframes pulse-green {
           0% {
@@ -366,6 +378,33 @@ export default function PulseMap({
           width: 100%;
           background: radial-gradient(circle at top, rgba(34, 211, 238, 0.08), transparent 34%),
             linear-gradient(180deg, #020617 0%, #050816 100%);
+        }
+
+        .pulse-map-shell--light .leaflet-container {
+          background: #f4f1ea;
+        }
+        .pulse-map-shell--light .leaflet-control-attribution {
+          background: rgba(255, 255, 255, 0.85);
+          border: 1px solid rgba(14, 14, 16, 0.12);
+          color: rgba(14, 14, 16, 0.6);
+        }
+        .pulse-map-shell--light .leaflet-control-attribution a {
+          color: #0077bc;
+        }
+        .pulse-map-shell--light .leaflet-control-zoom a {
+          background: rgba(255, 255, 255, 0.95);
+          color: #0e0e10;
+          border-bottom: 1px solid rgba(14, 14, 16, 0.08);
+        }
+        .pulse-map-shell--light .leaflet-control-zoom a:hover {
+          background: #f4f1ea;
+          color: #fc5200;
+        }
+        .pulse-map-shell--light .leaflet-popup-content-wrapper,
+        .pulse-map-shell--light .leaflet-popup-tip {
+          background: #ffffff;
+          color: #0e0e10;
+          border: 1px solid rgba(14, 14, 16, 0.16);
         }
 
         .pulse-map-shell .leaflet-control-attribution {
@@ -544,15 +583,36 @@ export default function PulseMap({
         }
       `}</style>
 
-      <div className="pointer-events-none absolute left-4 top-4 z-[500] rounded-full border border-white/10 bg-black/60 px-4 py-2 text-sm font-medium text-white/90 shadow-[0_16px_40px_rgba(2,6,23,0.32)] backdrop-blur">
+      <div
+        className={cn(
+          "pointer-events-none absolute left-4 top-4 z-[500] rounded-full px-4 py-2 text-sm font-medium shadow-[0_16px_40px_rgba(2,6,23,0.32)] backdrop-blur",
+          isLight
+            ? "border-2 border-brand-ink bg-white/90 text-brand-ink"
+            : "border border-white/10 bg-black/60 text-white/90",
+        )}
+      >
         Pickup games in {cityName}
       </div>
       {showEmptyOverlay ? (
-        <div className="pointer-events-none absolute left-4 top-16 z-[500] rounded-full border border-white/10 bg-black/60 px-4 py-2 text-sm text-white/75 shadow-[0_16px_40px_rgba(2,6,23,0.32)] backdrop-blur">
+        <div
+          className={cn(
+            "pointer-events-none absolute left-4 top-16 z-[500] rounded-full px-4 py-2 text-sm shadow-[0_16px_40px_rgba(2,6,23,0.32)] backdrop-blur",
+            isLight
+              ? "border-2 border-brand-ink bg-white/90 text-brand-ink/80"
+              : "border border-white/10 bg-black/60 text-white/75",
+          )}
+        >
           No live games yet
         </div>
       ) : null}
-      <div className="pointer-events-none absolute bottom-4 left-4 z-[500] rounded-2xl border border-white/10 bg-black/55 px-4 py-3 text-white/90 shadow-[0_20px_50px_rgba(2,6,23,0.4)] backdrop-blur-md">
+      <div
+        className={cn(
+          "pointer-events-none absolute bottom-4 left-4 z-[500] rounded-2xl px-4 py-3 shadow-[0_20px_50px_rgba(2,6,23,0.4)] backdrop-blur-md",
+          isLight
+            ? "border-2 border-brand-ink bg-white/95 text-brand-ink"
+            : "border border-white/10 bg-black/55 text-white/90",
+        )}
+      >
         <div className="space-y-2 text-xs">
           <div className="flex items-center gap-2">
             <span className="h-2.5 w-2.5 rounded-full bg-cyan-300 shadow-[0_0_12px_rgba(103,232,249,0.9)]" />
@@ -567,7 +627,12 @@ export default function PulseMap({
             <span>Today&apos;s events</span>
           </div>
         </div>
-        <div className="mt-3 border-t border-white/10 pt-3 text-[11px] uppercase tracking-[0.18em] text-white/55">
+        <div
+          className={cn(
+            "mt-3 border-t pt-3 text-[11px] uppercase tracking-[0.18em]",
+            isLight ? "border-brand-ink/15 text-brand-ink/60" : "border-white/10 text-white/55",
+          )}
+        >
           {groups.length} groups, {events.length} events, {venues.length} venues
         </div>
       </div>
@@ -586,7 +651,12 @@ export default function PulseMap({
 
         <LeafletTileLayer
           attribution='&copy; <a href="https://carto.com">CARTO</a> &copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>'
-          url="https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png"
+          key={isLight ? "light-tiles" : "dark-tiles"}
+          url={
+            isLight
+              ? "https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png"
+              : "https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png"
+          }
         />
 
         <Pane name="activity-zones" style={{ zIndex: 320 }}>
@@ -647,8 +717,13 @@ export default function PulseMap({
         <Pane name="labels-overlay" style={{ pointerEvents: "none", zIndex: 900 }}>
           <LeafletTileLayer
             attribution=""
+            key={isLight ? "light-labels" : "dark-labels"}
             pane="labels-overlay"
-            url="https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png"
+            url={
+              isLight
+                ? "https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png"
+                : "https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png"
+            }
           />
         </Pane>
       </LeafletMapContainer>

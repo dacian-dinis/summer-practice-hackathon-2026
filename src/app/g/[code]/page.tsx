@@ -16,6 +16,11 @@ const SPORT_EMOJI: Record<string, string> = {
   Padel: "\u{1F3BE}",
   Tennis: "\u{1F3BE}",
   Volleyball: "\u{1F3D0}",
+  Jogging: "\u{1F3C3}",
+  Running: "\u{1F3C3}‍♂️",
+  Cycling: "\u{1F6B4}",
+  Yoga: "\u{1F9D8}",
+  Hiking: "\u{1F97E}",
 };
 
 function formatGroupDate(date: string): string {

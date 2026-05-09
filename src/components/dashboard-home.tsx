@@ -15,15 +15,8 @@ import {
 import { resolveCity } from "@/lib/geo";
 import { getDict } from "@/lib/i18n";
 import { prisma } from "@/lib/prisma";
+import { SPORT_EMOJI } from "@/lib/sports";
 import { todayDate } from "@/lib/today";
-
-const SPORT_EMOJI: Record<string, string> = {
-  Basketball: "\u{1F3C0}",
-  Football: "\u26BD",
-  Padel: "\u{1F3BE}",
-  Tennis: "\u{1F3BE}",
-  Volleyball: "\u{1F3D0}",
-};
 
 function statusLabel(status: string | null): string {
   if (status === "YES") {

@@ -103,8 +103,8 @@ export function Landing(): JSX.Element {
           </div>
 
           <div className="relative flex items-center justify-center lg:justify-end">
-            <div className="absolute inset-0 hidden lg:block bg-[radial-gradient(circle_at_70%_50%,rgba(252,82,0,0.18),transparent_60%)]" />
-            <LogoMark size={260} />
+            <div className="pointer-events-none absolute inset-0 hidden dark:lg:block bg-[radial-gradient(circle_at_70%_50%,rgba(252,82,0,0.22),transparent_60%)]" />
+            <LogoMark className="relative drop-shadow-[0_24px_60px_rgba(252,82,0,0.18)] dark:drop-shadow-[0_24px_60px_rgba(252,82,0,0.32)]" size={260} />
           </div>
         </div>
       </section>
@@ -151,16 +151,16 @@ export function Landing(): JSX.Element {
         </div>
       </section>
 
-      {/* AI BAND — bold blue */}
-      <section className="border-y-2 border-brand-ink bg-bluebold text-white dark:border-neutral-50">
+      {/* AI BAND — cream, matching hero */}
+      <section className="border-y-2 border-brand-ink bg-brand-cream text-brand-ink dark:border-neutral-50 dark:bg-neutral-950 dark:text-neutral-50">
         <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
           <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] lg:items-center">
             <div>
-              <div className="font-mono-label mb-4 text-white/70">AI LAYER</div>
-              <h2 className="font-display text-4xl leading-[0.95] sm:text-5xl lg:text-6xl">
-                Powered by Claude.
+              <div className="font-mono-label mb-4 text-brand-ink/60 dark:text-neutral-400">AI LAYER</div>
+              <h2 className="font-display text-4xl leading-[0.95] text-brand-ink dark:text-neutral-50 sm:text-5xl lg:text-6xl">
+                Powered by <span className="text-brand">Claude.</span>
               </h2>
-              <p className="mt-6 max-w-xl text-base leading-8 text-white/85">
+              <p className="mt-6 max-w-xl text-base leading-8 text-brand-ink/75 dark:text-neutral-300">
                 The product acts like an assistant captain. It reads signals, checks the conditions, and helps the group
                 converge faster — so you stop scheduling and start playing.
               </p>
@@ -170,14 +170,14 @@ export function Landing(): JSX.Element {
                 const Icon = item.icon;
                 return (
                   <div
-                    className="rounded-md border-2 border-white/30 bg-white/[0.06] p-5"
+                    className="rounded-md border-2 border-brand-ink bg-white p-5 transition-colors hover:border-brand dark:border-neutral-50 dark:bg-neutral-900 dark:hover:border-brand"
                     key={item.description}
                   >
                     <div className="mb-3 flex items-center gap-3">
-                      <Icon className="h-5 w-5" />
-                      <span className="font-mono-label text-white/70">{item.tag}</span>
+                      <Icon className="h-5 w-5 text-brand" />
+                      <span className="font-mono-label text-brand-ink/60 dark:text-neutral-400">{item.tag}</span>
                     </div>
-                    <div className="font-display text-base leading-snug">{item.description}</div>
+                    <div className="font-display text-base leading-snug text-brand-ink dark:text-neutral-50">{item.description}</div>
                   </div>
                 );
               })}
@@ -187,7 +187,7 @@ export function Landing(): JSX.Element {
       </section>
 
       {/* HOW IT WORKS */}
-      <section className="bg-brand-cream dark:bg-neutral-950">
+      <section className="bg-white dark:bg-neutral-900">
         <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
           <div className="mb-12 max-w-3xl">
             <div className="font-mono-label mb-4 text-brand-ink/60 dark:text-neutral-400">

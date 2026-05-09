@@ -1,12 +1,5 @@
 import { prisma } from "@/lib/prisma";
-
-const SPORT_EMOJI: Record<string, string> = {
-  Basketball: "🏀",
-  Football: "⚽",
-  Padel: "🎾",
-  Tennis: "🎾",
-  Volleyball: "🏐",
-};
+import { SPORT_EMOJI } from "@/lib/sports";
 
 function formatUtcDate(date: Date): string {
   return date.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}Z$/, "Z");

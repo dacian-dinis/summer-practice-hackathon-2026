@@ -30,6 +30,11 @@ const SPORT_EMOJI: Record<string, string> = {
   Padel: "🎾",
   Tennis: "🎾",
   Volleyball: "🏐",
+  Jogging: "🏃",
+  Running: "🏃‍♂️",
+  Cycling: "🚴",
+  Yoga: "🧘",
+  Hiking: "🥾",
 };
 
 function getStatusClasses(status: string): string {
