@@ -1,0 +1,137 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String         @id @default(cuid())
+  name            String         @unique
+  bio             String?
+  photoUrl        String?
+  skill           Int            @default(3)
+  createdAt       DateTime       @default(now())
+  userSports      UserSport[]
+  availability    Availability[]
+  groupsAsCaptain Group[]        @relation("captain")
+  groupMembers    GroupMember[]
+  messages        Message[]
+  votes           Vote[]
+}
+
+model Sport {
+  id           String         @id @default(cuid())
+  name         String         @unique
+  minGroup     Int
+  maxGroup     Int
+  userSports   UserSport[]
+  availability Availability[]
+  groups       Group[]
+  venueSports  VenueSport[]
+}
+
+model UserSport {
+  userId  String
+  sportId String
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sport   Sport  @relation(fields: [sportId], references: [id], onDelete: Cascade)
+
+  @@id([userId, sportId])
+}
+
+model Availability {
+  id     String @id @default(cuid())
+  userId String
+  date   String
+  sportId String
+  status String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sport  Sport  @relation(fields: [sportId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date, sportId])
+  @@index([date, sportId])
+}
+
+model Group {
+  id        String        @id @default(cuid())
+  sportId   String
+  date      String
+  captainId String
+  status    String        @default("FORMING")
+  createdAt DateTime      @default(now())
+  sport     Sport         @relation(fields: [sportId], references: [id])
+  captain   User          @relation("captain", fields: [captainId], references: [id])
+  members   GroupMember[]
+  messages  Message[]
+  event     Event?
+}
+
+model GroupMember {
+  groupId    String
+  userId     String
+  confirmed  Boolean @default(false)
+  group      Group   @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user       User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([groupId, userId])
+  @@index([groupId])
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  groupId   String
+  userId    String
+  text      String
+  createdAt DateTime @default(now())
+  group     Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([groupId, createdAt])
+}
+
+model Venue {
+  id           String       @id @default(cuid())
+  name         String
+  lat          Float
+  lng          Float
+  pricePerHour Int
+  address      String
+  venueSports  VenueSport[]
+  events       Event[]
+  votes        Vote[]
+}
+
+model VenueSport {
+  venueId String
+  sportId String
+  venue   Venue  @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  sport   Sport  @relation(fields: [sportId], references: [id], onDelete: Cascade)
+
+  @@id([venueId, sportId])
+}
+
+model Event {
+  id             String   @id @default(cuid())
+  groupId        String   @unique
+  venueId        String
+  startsAt       DateTime
+  weatherSummary String?
+  group          Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  venue          Venue    @relation(fields: [venueId], references: [id])
+  votes          Vote[]
+}
+
+model Vote {
+  id      String @id @default(cuid())
+  eventId String
+  userId  String
+  venueId String
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  venue   Venue  @relation(fields: [venueId], references: [id])
+
+  @@unique([eventId, userId])
+}
