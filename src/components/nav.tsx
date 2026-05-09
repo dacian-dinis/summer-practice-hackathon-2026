@@ -1,11 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useRef } from "react";
+import { Loader2, LogOut } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
-import { switchUserAction } from "@/app/actions";
+import { Avatar as UserAvatar } from "@/components/avatar";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { USER_NAMES, isUserName } from "@/lib/users";
+import { Button } from "@/components/ui/button";
 
 const NAV_LINKS = [
   { href: "/", label: "Home" },
@@ -15,12 +17,28 @@ const NAV_LINKS = [
 ] as const;
 
 type NavProps = {
-  currentUserName: string;
+  currentUser: {
+    name: string;
+    photoUrl: string | null;
+  } | null;
 };
 
-export function Nav({ currentUserName }: NavProps): JSX.Element {
-  const formRef = useRef<HTMLFormElement>(null);
-  const hasCurrentUserOption = isUserName(currentUserName);
+export function Nav({ currentUser }: NavProps): JSX.Element {
+  const router = useRouter();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  async function handleLogout(): Promise<void> {
+    setIsLoggingOut(true);
+
+    try {
+      await fetch("/api/auth/logout", {
+        method: "POST",
+      });
+    } finally {
+      router.refresh();
+      window.location.reload();
+    }
+  }
 
   return (
     <header className="border-b bg-white/90 backdrop-blur dark:border-neutral-800 dark:bg-neutral-900/90">
@@ -37,29 +55,35 @@ export function Nav({ currentUserName }: NavProps): JSX.Element {
           ))}
         </nav>
 
-        <ThemeToggle />
-
-        <form action={switchUserAction} ref={formRef} className="flex w-full flex-wrap items-center gap-3 sm:w-auto sm:flex-nowrap">
-          <label htmlFor="userId" className="whitespace-nowrap text-sm font-medium">
-            Switch User
-          </label>
-          <select
-            id="userId"
-            name="userId"
-            defaultValue={currentUserName}
-            onChange={() => formRef.current?.requestSubmit()}
-            className="h-10 min-w-0 flex-1 rounded-md border bg-background px-3 text-sm sm:min-w-44"
-          >
-            {!hasCurrentUserOption ? <option value={currentUserName}>{currentUserName}</option> : null}
-            {USER_NAMES.map((name) => {
-              return (
-                <option key={name} value={name}>
-                  {name}
-                </option>
-              );
-            })}
-          </select>
-        </form>
+        <div className="flex w-full flex-wrap items-center justify-between gap-3 sm:w-auto sm:justify-end">
+          <ThemeToggle />
+          {currentUser ? (
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 rounded-full border border-neutral-200 bg-background px-2 py-1 dark:border-neutral-800">
+                <UserAvatar
+                  className="h-8 w-8"
+                  fallbackClassName="bg-neutral-200 text-xs font-semibold text-neutral-700 dark:bg-neutral-700 dark:text-neutral-100"
+                  name={currentUser.name}
+                  src={currentUser.photoUrl}
+                />
+                <span className="max-w-[10rem] truncate text-sm font-medium text-foreground">
+                  {currentUser.name}
+                </span>
+              </div>
+              <Button
+                className="min-h-10"
+                disabled={isLoggingOut}
+                onClick={() => void handleLogout()}
+                size="sm"
+                type="button"
+                variant="outline"
+              >
+                {isLoggingOut ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <LogOut className="mr-2 h-4 w-4" />}
+                Logout
+              </Button>
+            </div>
+          ) : null}
+        </div>
       </div>
     </header>
   );

@@ -1,4 +1,4 @@
-import type { Group, User } from "@prisma/client";
+import type { Group, User } from "@/generated/prisma";
 import { z } from "zod";
 
 import { getCurrentUser } from "@/lib/auth";

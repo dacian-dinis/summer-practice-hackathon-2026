@@ -1,6 +1,4 @@
 "use server";
-
-import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
@@ -51,11 +49,6 @@ export async function saveOnboardingProfile(input: {
       data: {
         name: parsed.data.name,
       },
-    });
-
-    cookies().set("userId", currentUser.id, {
-      path: "/",
-      sameSite: "lax",
     });
 
     revalidatePath("/");

@@ -1,4 +1,7 @@
-import { PrismaClient } from "@prisma/client";
+import { hash } from "bcrypt-ts";
+import { PrismaClient } from "../src/generated/prisma";
+
+import { slugifyUserName } from "../src/lib/users";
 
 const prisma = new PrismaClient();
 
@@ -181,6 +184,10 @@ const todaysAvailability = [
   { userName: "Cristian", sportName: "Basketball", status: "YES" },
 ] as const;
 
+function buildDemoEmail(name: string): string {
+  return `${slugifyUserName(name)}@showup2move.dev`;
+}
+
 async function main() {
   if (process.env.RESET === "1") {
     await prisma.vote.deleteMany();
@@ -212,17 +219,22 @@ async function main() {
   }
 
   const userByName = new Map<string, { id: string }>();
+  const demoPasswordHash = await hash("demo1234", 10);
 
   for (const user of users) {
     const savedUser = await prisma.user.upsert({
       where: { name: user.name },
       update: {
+        email: buildDemoEmail(user.name),
+        passwordHash: demoPasswordHash,
         bio: user.bio,
         skill: user.skill,
         onboardedAt: new Date(),
       },
       create: {
         name: user.name,
+        email: buildDemoEmail(user.name),
+        passwordHash: demoPasswordHash,
         bio: user.bio,
         skill: user.skill,
         onboardedAt: new Date(),

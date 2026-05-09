@@ -1,6 +1,4 @@
 "use server";
-
-import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
@@ -56,11 +54,6 @@ export async function saveProfile(
           })),
         });
       }
-    });
-
-    cookies().set("userId", currentUser.id, {
-      path: "/",
-      sameSite: "lax",
     });
 
     revalidatePath("/");
