@@ -186,7 +186,7 @@ export function FindGroupButton({ sportIds }: FindGroupButtonProps): JSX.Element
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ sportIds }),
+        body: JSON.stringify({}),
       });
 
       if (!response.ok) {
@@ -683,12 +683,12 @@ export function ProfileForm({
                   >
                     <Badge
                       className={cn(
-                        "gap-2 px-4 py-2 text-sm",
+                        "gap-2 border-transparent px-4 py-2 text-sm",
                         selected
                           ? "bg-brand text-white"
                           : "bg-white text-neutral-700 dark:bg-neutral-900 dark:text-neutral-300",
                       )}
-                      variant="outline"
+                      variant="secondary"
                     >
                       <span>{sport.name}</span>
                       {status ? (

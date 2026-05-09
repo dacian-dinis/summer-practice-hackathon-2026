@@ -427,7 +427,7 @@ export function OnboardingSkillForm({
   return (
     <form className="space-y-6" onSubmit={handleSubmit}>
       <Notice message={notice} />
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-5">
         {SKILL_OPTIONS.map((option, index) => {
           const selected = skill === option.level;
 
@@ -435,24 +435,29 @@ export function OnboardingSkillForm({
             <button
               aria-pressed={selected}
               className={cn(
-                "rounded-md border-2 border-brand-ink bg-white p-4 text-left transition-colors hover:border-brand dark:border-neutral-50 dark:bg-neutral-950",
-                selected && "border-brand bg-brand text-white",
+                "rounded-md border-2 p-4 text-left transition-colors",
+                selected
+                  ? "border-brand bg-brand text-white dark:border-brand dark:bg-brand"
+                  : "border-brand-ink bg-white text-neutral-900 hover:border-brand dark:border-neutral-50 dark:bg-neutral-950 dark:text-neutral-100",
               )}
               key={option.level}
               onClick={() => setSkill(option.level)}
               type="button"
             >
-              <Card className="border-0 bg-transparent shadow-none">
-                <CardContent className="space-y-3 p-0">
-                  <div className="text-3xl">{option.emoji}</div>
-                  <div className="space-y-1">
-                    <div className="font-display text-xl">{optionLabels[index]}</div>
-                    <div className={cn("text-sm leading-5 text-neutral-600 dark:text-neutral-400", selected && "text-white/90")}>
-                      {optionDescriptions[index]}
-                    </div>
+              <div className="space-y-3">
+                <div className="text-3xl">{option.emoji}</div>
+                <div className="space-y-1">
+                  <div className="font-display text-xl">{optionLabels[index]}</div>
+                  <div
+                    className={cn(
+                      "text-sm leading-5",
+                      selected ? "text-white/90" : "text-neutral-600 dark:text-neutral-400",
+                    )}
+                  >
+                    {optionDescriptions[index]}
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             </button>
           );
         })}
@@ -528,8 +533,10 @@ export function OnboardingTimesForm({
             <button
               aria-pressed={selected}
               className={cn(
-                "min-h-11 rounded-md border-2 border-brand-ink bg-white px-4 py-3 text-sm font-semibold transition-colors hover:border-brand dark:border-neutral-50 dark:bg-neutral-950",
-                selected && "border-brand bg-brand text-white",
+                "min-h-11 rounded-md border-2 px-4 py-3 text-sm font-semibold transition-colors",
+                selected
+                  ? "border-brand bg-brand text-white dark:border-brand dark:bg-brand"
+                  : "border-brand-ink bg-white text-neutral-900 hover:border-brand dark:border-neutral-50 dark:bg-neutral-950 dark:text-neutral-100",
               )}
               key={option.id}
               onClick={() => togglePlaytime(option.id)}
