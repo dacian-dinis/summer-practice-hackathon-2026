@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
 import type { FormEvent } from "react";
 import { useState } from "react";
 
@@ -26,7 +25,6 @@ const DEMO_ACCOUNTS = [
 ] as const;
 
 export function LoginForm(): JSX.Element {
-  const router = useRouter();
   const { toast } = useToast();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -52,6 +50,7 @@ export function LoginForm(): JSX.Element {
     try {
       const response = await fetch("/api/auth/login", {
         method: "POST",
+        credentials: "same-origin",
         headers: {
           "Content-Type": "application/json",
         },
@@ -66,8 +65,7 @@ export function LoginForm(): JSX.Element {
         return;
       }
 
-      router.push(data.redirect);
-      router.refresh();
+      window.location.assign(data.redirect);
     } catch {
       setError("Could not log in");
       toast({ title: "Could not log in" });

@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { Loader2, LogOut } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { Avatar as UserAvatar } from "@/components/avatar";
@@ -24,7 +23,6 @@ type NavProps = {
 };
 
 export function Nav({ currentUser }: NavProps): JSX.Element {
-  const router = useRouter();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   async function handleLogout(): Promise<void> {
@@ -33,10 +31,10 @@ export function Nav({ currentUser }: NavProps): JSX.Element {
     try {
       await fetch("/api/auth/logout", {
         method: "POST",
+        credentials: "same-origin",
       });
     } finally {
-      router.refresh();
-      window.location.reload();
+      window.location.assign("/");
     }
   }
 

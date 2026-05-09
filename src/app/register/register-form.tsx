@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
 import type { FormEvent } from "react";
 import { useState } from "react";
 
@@ -19,7 +18,6 @@ import { useToast } from "@/components/ui/use-toast";
 import { registerInputSchema } from "@/lib/auth-inputs";
 
 export function RegisterForm(): JSX.Element {
-  const router = useRouter();
   const { toast } = useToast();
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
@@ -50,6 +48,7 @@ export function RegisterForm(): JSX.Element {
     try {
       const response = await fetch("/api/auth/register", {
         method: "POST",
+        credentials: "same-origin",
         headers: {
           "Content-Type": "application/json",
         },
@@ -68,8 +67,7 @@ export function RegisterForm(): JSX.Element {
         return;
       }
 
-      router.push(data.redirect);
-      router.refresh();
+      window.location.assign(data.redirect);
     } catch {
       setError("Could not create account");
       toast({ title: "Could not create account" });
