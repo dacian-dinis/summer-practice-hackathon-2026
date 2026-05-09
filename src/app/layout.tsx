@@ -13,8 +13,8 @@ import { getCurrentUser } from "@/lib/auth";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "ShowUp2Move",
-  description: "Pickup sports without the chaos.",
+  title: "showup2move — social, sport, spontaneous",
+  description: "Pickup sports without the chaos. Social. Sport. Spontaneous.",
 };
 
 type RootLayoutProps = {

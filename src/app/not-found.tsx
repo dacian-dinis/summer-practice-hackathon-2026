@@ -1,10 +1,14 @@
 import Link from "next/link";
 
+import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
 
 export default function NotFound(): JSX.Element {
   return (
     <div className="mx-auto flex min-h-[60vh] max-w-xl flex-col items-center justify-center gap-6 px-6 text-center">
+      <Link aria-label="showup2move home" href="/">
+        <Logo size="md" />
+      </Link>
       <div className="space-y-2">
         <div className="text-6xl font-black tracking-tight text-neutral-900 dark:text-neutral-50">
           404
@@ -14,7 +18,12 @@ export default function NotFound(): JSX.Element {
         </p>
       </div>
       <Link href="/">
-        <Button type="button">Back to home</Button>
+        <Button
+          className="bg-orange-500 text-white hover:bg-orange-600"
+          type="button"
+        >
+          Back to home
+        </Button>
       </Link>
     </div>
   );

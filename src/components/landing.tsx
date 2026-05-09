@@ -79,7 +79,7 @@ export function Landing(): JSX.Element {
             <div className="grid gap-12 px-6 py-14 text-white sm:px-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)] lg:px-12 lg:py-16">
               <div className="flex flex-col justify-center">
                 <Badge className="mb-5 w-fit border-white/20 bg-white/[0.12] px-4 py-1.5 text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-white backdrop-blur-md">
-                  Inspired pickup, same-night energy
+                  Social · Sport · Spontaneous
                 </Badge>
                 <h1 className="max-w-3xl text-5xl font-black tracking-tight sm:text-6xl">
                   Pickup sports, without the chaos.

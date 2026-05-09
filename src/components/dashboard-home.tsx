@@ -114,9 +114,9 @@ export async function DashboardHome({ currentUser }: DashboardHomeProps): Promis
   return (
     <div className="space-y-8">
       <section className="space-y-2">
-        <h1 className="text-3xl font-semibold tracking-tight text-neutral-950 dark:text-neutral-50 sm:text-4xl">
-          ShowUp2Move
-        </h1>
+        <p className="text-xs font-semibold uppercase tracking-[0.28em] text-orange-500 dark:text-orange-400">
+          Social · Sport · Spontaneous
+        </p>
         <p className="text-sm text-neutral-600 dark:text-neutral-400">
           Pickup sports without the chaos near {city.name}.
         </p>

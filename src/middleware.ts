@@ -9,13 +9,15 @@ import {
 } from "@/lib/session";
 
 const PUBLIC_PATHS = new Set(["/", "/favicon.ico", "/login", "/register"]);
+const PUBLIC_ASSET_RE = /\.(?:png|jpe?g|svg|webp|gif|ico|css|js|woff2?|ttf|map|txt)$/i;
 
 function isPublicPath(pathname: string): boolean {
   return (
     PUBLIC_PATHS.has(pathname) ||
     pathname.startsWith("/api/auth/") ||
     pathname === "/api/auth" ||
-    pathname.startsWith("/_next/")
+    pathname.startsWith("/_next/") ||
+    PUBLIC_ASSET_RE.test(pathname)
   );
 }
 

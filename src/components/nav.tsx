@@ -5,6 +5,7 @@ import { Loader2, LogOut } from "lucide-react";
 import { useState } from "react";
 
 import { Avatar as UserAvatar } from "@/components/avatar";
+import { Logo } from "@/components/logo";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 
@@ -41,17 +42,22 @@ export function Nav({ currentUser }: NavProps): JSX.Element {
   return (
     <header className="border-b bg-white/90 backdrop-blur dark:border-neutral-800 dark:bg-neutral-900/90">
       <div className="mx-auto flex max-w-5xl flex-col gap-4 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-        <nav className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm font-medium">
-          {NAV_LINKS.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="inline-flex min-h-10 items-center text-muted-foreground transition-colors hover:text-foreground"
-            >
-              {link.label}
-            </Link>
-          ))}
-        </nav>
+        <div className="flex flex-wrap items-center gap-4 sm:gap-6">
+          <Link aria-label="showup2move home" href="/">
+            <Logo size="sm" />
+          </Link>
+          <nav className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm font-medium">
+            {NAV_LINKS.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="inline-flex min-h-10 items-center text-muted-foreground transition-colors hover:text-foreground"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
+        </div>
 
         <div className="flex w-full flex-wrap items-center justify-between gap-3 sm:w-auto sm:justify-end">
           <ThemeToggle />
