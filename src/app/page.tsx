@@ -146,6 +146,11 @@ export default async function HomePage(): Promise<JSX.Element> {
               <p className="max-w-2xl text-sm leading-6 text-neutral-600">
                 Mark each sport once and the matching flow can use your real availability instead of guessing.
               </p>
+              <Link href="/events/new">
+                <Button size="sm" type="button" variant="outline">
+                  Create event
+                </Button>
+              </Link>
             </div>
           </div>
           <Card className="min-w-[280px] border-neutral-200 bg-white/80 backdrop-blur">

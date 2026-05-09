@@ -1,4 +1,5 @@
 import { CheckCircle2 } from "lucide-react";
+import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 
 import { CaptainCopilot } from "@/components/captain-copilot";
@@ -60,6 +61,60 @@ type GroupDetailPageProps = {
     id: string;
   };
 };
+
+type CompatibilityResponse = {
+  score: number;
+  summary: string;
+  fallback: boolean;
+};
+
+async function getCompatibility(groupId: string): Promise<CompatibilityResponse | null> {
+  const headerStore = headers();
+  const host = headerStore.get("host");
+
+  if (!host) {
+    return null;
+  }
+
+  const protocol = headerStore.get("x-forwarded-proto") ?? "http";
+  const cookie = headerStore.get("cookie");
+
+  try {
+    const response = await fetch(`${protocol}://${host}/api/ai/compatibility`, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        ...(cookie ? { cookie } : {}),
+      },
+      body: JSON.stringify({ groupId }),
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      return null;
+    }
+
+    const json: unknown = await response.json();
+
+    if (!json || typeof json !== "object") {
+      return null;
+    }
+
+    const data = json as Partial<CompatibilityResponse>;
+
+    if (
+      typeof data.score !== "number" ||
+      typeof data.summary !== "string" ||
+      typeof data.fallback !== "boolean"
+    ) {
+      return null;
+    }
+
+    return data as CompatibilityResponse;
+  } catch {
+    return null;
+  }
+}
 
 export default async function GroupDetailPage({
   params,
@@ -127,6 +182,7 @@ export default async function GroupDetailPage({
     );
   }
 
+  const compatibility = await getCompatibility(group.id);
   const initialMessages = group.messages.map((message) => ({
     id: message.id,
     userId: message.userId,
@@ -187,6 +243,12 @@ export default async function GroupDetailPage({
                   {group.status}
                 </Badge>
                 <span>Captain {group.captain.name} ⭐</span>
+                {compatibility ? (
+                  <Badge className="max-w-full gap-1 bg-white/10 text-white" variant="secondary">
+                    <span>✨ Compatibility {compatibility.score}</span>
+                    <span className="truncate text-neutral-200">{compatibility.summary}</span>
+                  </Badge>
+                ) : null}
               </div>
             </div>
             <ConfirmGroupButton

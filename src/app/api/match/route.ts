@@ -11,22 +11,65 @@ function hasNonEmptyBio(user: Pick<User, "bio">): boolean {
   return typeof user.bio === "string" && user.bio.trim().length > 0;
 }
 
-function compareUsers(a: Pick<User, "bio" | "createdAt">, b: Pick<User, "bio" | "createdAt">): number {
-  const aHasBio = hasNonEmptyBio(a);
-  const bHasBio = hasNonEmptyBio(b);
-
-  if (aHasBio !== bHasBio) {
-    return aHasBio ? -1 : 1;
+function compareBySkillDescAndCreatedAt(
+  a: Pick<User, "skill" | "createdAt">,
+  b: Pick<User, "skill" | "createdAt">,
+): number {
+  if (a.skill !== b.skill) {
+    return b.skill - a.skill;
   }
 
   return a.createdAt.getTime() - b.createdAt.getTime();
 }
 
-function pickCaptain<T extends Pick<User, "id" | "bio">>(users: T[]): T {
-  const usersWithBio = users.filter(hasNonEmptyBio);
-  const captainPool = usersWithBio.length > 0 ? usersWithBio : users;
+function getSkillMedian(users: Pick<User, "skill">[]): number {
+  const skills = [...users]
+    .map((user) => user.skill)
+    .sort((a, b) => a - b);
+  const middleIndex = Math.floor(skills.length / 2);
 
-  return captainPool[Math.floor(Math.random() * captainPool.length)];
+  if (skills.length % 2 === 1) {
+    return skills[middleIndex];
+  }
+
+  return (skills[middleIndex - 1] + skills[middleIndex]) / 2;
+}
+
+function compareByCoreBandPriority(
+  median: number,
+): (
+  a: Pick<User, "bio" | "skill" | "createdAt">,
+  b: Pick<User, "bio" | "skill" | "createdAt">,
+) => number {
+  return (a, b) => {
+    const aHasBio = hasNonEmptyBio(a);
+    const bHasBio = hasNonEmptyBio(b);
+
+    if (aHasBio !== bHasBio) {
+      return aHasBio ? -1 : 1;
+    }
+
+    const skillDistanceDiff =
+      Math.abs(a.skill - median) - Math.abs(b.skill - median);
+
+    if (skillDistanceDiff !== 0) {
+      return skillDistanceDiff;
+    }
+
+    return a.createdAt.getTime() - b.createdAt.getTime();
+  };
+}
+
+function pickHighestSkillCaptain<T extends Pick<User, "bio" | "skill" | "createdAt">>(
+  users: T[],
+  preferBio: boolean,
+): T {
+  const captainPool = preferBio
+    ? users.filter(hasNonEmptyBio)
+    : users;
+  const effectivePool = captainPool.length > 0 ? captainPool : users;
+
+  return [...effectivePool].sort(compareBySkillDescAndCreatedAt)[0];
 }
 
 export async function POST(request: Request): Promise<Response> {
@@ -105,50 +148,90 @@ export async function POST(request: Request): Promise<Response> {
       }
 
       const users = availabilities.map((availability) => availability.user);
-      const captain = pickCaptain(users);
-      const selectedUsers = users.sort(compareUsers).slice(0, sport.maxGroup);
+      const median = getSkillMedian(users);
+      const coreBandUsers = users.filter(
+        (user) => Math.abs(user.skill - median) <= 1,
+      );
 
-      if (!selectedUsers.some((user) => user.id === captain.id)) {
-        selectedUsers[selectedUsers.length - 1] = captain;
+      if (coreBandUsers.length < sport.minGroup) {
+        continue;
       }
 
-      const createdGroup = await prisma.$transaction(async (tx) => {
-        const groupAlreadyExists = await tx.group.findFirst({
-          where: {
-            sportId: sport.id,
-            date: today,
-            status: {
-              in: ["FORMING", "CONFIRMED"],
+      const selectedPrimaryUsers = [...coreBandUsers]
+        .sort(compareByCoreBandPriority(median))
+        .slice(0, sport.maxGroup);
+      const primaryCaptain = pickHighestSkillCaptain(
+        selectedPrimaryUsers,
+        true,
+      );
+
+      const remainingUsers = users.filter(
+        (user) =>
+          !selectedPrimaryUsers.some((selectedUser) => selectedUser.id === user.id),
+      );
+      const pendingGroups: Array<{
+        captain: User;
+        users: User[];
+      }> = [
+        {
+          captain: primaryCaptain,
+          users: selectedPrimaryUsers,
+        },
+      ];
+
+      if (remainingUsers.length >= sport.minGroup) {
+        const remainingMedian = getSkillMedian(remainingUsers);
+        const selectedRemainingUsers = [...remainingUsers]
+          .sort(compareByCoreBandPriority(remainingMedian))
+          .slice(0, sport.maxGroup);
+
+        pendingGroups.push({
+          captain: pickHighestSkillCaptain(selectedRemainingUsers, false),
+          users: selectedRemainingUsers,
+        });
+      }
+
+      for (const [index, pendingGroup] of pendingGroups.entries()) {
+        const createdGroup = await prisma.$transaction(async (tx) => {
+          const existingGroupCount = await tx.group.count({
+            where: {
+              sportId: sport.id,
+              date: today,
+              status: {
+                in: ["FORMING", "CONFIRMED"],
+              },
             },
-          },
+          });
+
+          if (existingGroupCount !== index) {
+            return null;
+          }
+
+          const group = await tx.group.create({
+            data: {
+              sportId: sport.id,
+              date: today,
+              captainId: pendingGroup.captain.id,
+              status: "FORMING",
+            },
+          });
+
+          await tx.groupMember.createMany({
+            data: pendingGroup.users.map((user) => ({
+              groupId: group.id,
+              userId: user.id,
+              confirmed: user.id === pendingGroup.captain.id,
+            })),
+          });
+
+          return group;
         });
 
-        if (groupAlreadyExists) {
-          return null;
+        if (createdGroup) {
+          created.push(createdGroup);
+        } else {
+          break;
         }
-
-        const group = await tx.group.create({
-          data: {
-            sportId: sport.id,
-            date: today,
-            captainId: captain.id,
-            status: "FORMING",
-          },
-        });
-
-        await tx.groupMember.createMany({
-          data: selectedUsers.map((user) => ({
-            groupId: group.id,
-            userId: user.id,
-            confirmed: user.id === captain.id,
-          })),
-        });
-
-        return group;
-      });
-
-      if (createdGroup) {
-        created.push(createdGroup);
       }
     }
 
