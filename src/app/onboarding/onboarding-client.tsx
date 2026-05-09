@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { Loader2, Sparkles } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 
 import { AvailabilityToggle } from "@/app/client-components";
@@ -62,11 +61,9 @@ function Notice({ message }: { message: string | null }): JSX.Element | null {
 }
 
 export function OnboardingRedirect(): JSX.Element {
-  const router = useRouter();
-
   useEffect(() => {
-    router.replace("/onboarding/profile");
-  }, [router]);
+    window.location.assign("/onboarding/profile");
+  }, []);
 
   return (
     <div className="flex min-h-screen items-center justify-center px-6 text-sm text-neutral-600 dark:text-neutral-400">
@@ -82,7 +79,6 @@ export function OnboardingProfileForm({
   initialName: string;
   photoUrl: string | null;
 }): JSX.Element {
-  const router = useRouter();
   const [name, setName] = useState(initialName);
   const [notice, setNotice] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -101,8 +97,7 @@ export function OnboardingProfileForm({
         return;
       }
 
-      router.push("/onboarding/bio");
-      router.refresh();
+      window.location.assign("/onboarding/bio");
     });
   }
 
@@ -161,7 +156,6 @@ export function OnboardingBioForm({
   initialSportIds: string[];
   sports: SportOption[];
 }): JSX.Element {
-  const router = useRouter();
   const [bio, setBio] = useState(initialBio);
   const [selectedSportIds, setSelectedSportIds] = useState<string[]>(initialSportIds);
   const [notice, setNotice] = useState<string | null>(null);
@@ -234,8 +228,7 @@ export function OnboardingBioForm({
         return;
       }
 
-      router.push("/onboarding/availability");
-      router.refresh();
+      window.location.assign("/onboarding/availability");
     });
   }
 
@@ -349,7 +342,6 @@ export function OnboardingAvailabilityList({
 }
 
 export function OnboardingFinishButton(): JSX.Element {
-  const router = useRouter();
   const [notice, setNotice] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
@@ -364,8 +356,7 @@ export function OnboardingFinishButton(): JSX.Element {
         return;
       }
 
-      router.push("/");
-      router.refresh();
+      window.location.assign("/");
     });
   }
 
