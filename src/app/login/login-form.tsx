@@ -79,6 +79,12 @@ export function LoginForm(): JSX.Element {
   return (
     <Card className="w-full max-w-md border-neutral-200 bg-white/95 shadow-xl dark:border-neutral-800 dark:bg-neutral-900/95">
       <CardHeader className="space-y-3">
+        <Link
+          className="inline-flex w-fit items-center text-sm font-medium text-neutral-600 transition-colors hover:text-neutral-950 dark:text-neutral-400 dark:hover:text-neutral-50"
+          href="/"
+        >
+          &larr; Back to home
+        </Link>
         <CardTitle className="text-3xl">Log in</CardTitle>
         <CardDescription>
           Sign in with your email and password to get back into your groups, profile, and today&apos;s availability.

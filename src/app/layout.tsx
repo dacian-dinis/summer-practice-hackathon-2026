@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
 
 import { OnboardingRedirect } from "@/app/onboarding/onboarding-client";
+import { MarketingNav } from "@/components/marketing-nav";
 import { Nav } from "@/components/nav";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
@@ -26,10 +27,11 @@ export default async function RootLayout({ children }: RootLayoutProps): Promise
   const isAuthPath = pathname === "/login" || pathname === "/register";
   const isOnboardingPath = pathname.startsWith("/onboarding");
   const currentUser = await getCurrentUser();
+  const isMarketingHome = currentUser === null && pathname === "/";
   const needsOnboarding = currentUser !== null && currentUser.onboardedAt === null && !isOnboardingPath;
   const bodyClassName = "min-h-screen bg-neutral-50 text-neutral-950 dark:bg-neutral-950 dark:text-neutral-50";
 
-  if (currentUser === null && !isAuthPath) {
+  if (currentUser === null && !isAuthPath && pathname !== "/") {
     redirect("/login");
   }
 
@@ -52,6 +54,20 @@ export default async function RootLayout({ children }: RootLayoutProps): Promise
         <body className={bodyClassName}>
           <ThemeProvider>
             {children}
+            <Toaster />
+          </ThemeProvider>
+        </body>
+      </html>
+    );
+  }
+
+  if (isMarketingHome) {
+    return (
+      <html lang="en" suppressHydrationWarning>
+        <body className={bodyClassName}>
+          <ThemeProvider>
+            <MarketingNav />
+            <main>{children}</main>
             <Toaster />
           </ThemeProvider>
         </body>
